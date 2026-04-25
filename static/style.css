@@ -1,0 +1,2371 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
+            display: flex;
+            background: linear-gradient(135deg, #e8f4fc 0%, #f0f8ff 100%);
+            min-height: 100vh;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 220px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            height: 100vh;
+            padding: 20px 15px;
+            box-shadow: 2px 0 15px rgba(52, 152, 219, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e8f4fc;
+        }
+
+        .sidebar-header .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .sidebar-header .logo-icon i {
+            color: #ffffff;
+            font-size: 22px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            color: #3498db;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header .current-time {
+            font-size: 11px;
+            color: #a0b4c4;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .menu-label {
+            font-size: 10px;
+            color: #a0b4c4;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 15px 5px;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li {
+            margin: 4px 0;
+        }
+
+        .sidebar ul li a {
+            color: #5a6c7d;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        .sidebar ul li a:hover {
+            background: linear-gradient(135deg, #e8f4fc 0%, #d6eaf8 100%);
+            color: #3498db;
+            transform: translateX(3px);
+        }
+
+        .sidebar ul li a.active {
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            color: #ffffff;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* 快捷统计 */
+        .quick-stats {
+            display: flex;
+            gap: 8px;
+            padding: 0 10px;
+            margin-bottom: 10px;
+        }
+
+        .stat-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-item.stat-valid {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .stat-item.stat-valid i {
+            color: #28a745;
+            font-size: 16px;
+        }
+
+        .stat-item.stat-invalid {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        }
+
+        .stat-item.stat-invalid i {
+            color: #dc3545;
+            font-size: 16px;
+        }
+
+        .stat-item.stat-checking {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+        }
+
+        .stat-item.stat-checking i {
+            color: #ffc107;
+            font-size: 16px;
+        }
+
+        .stat-item.stat-unchecked {
+            background: linear-gradient(135deg, #e2e3e5 0%, #d6d8db 100%);
+        }
+
+        .stat-item.stat-unchecked i {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        .stat-refresh {
+            font-size: 10px;
+            color: #3498db;
+            cursor: pointer;
+            margin-left: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-refresh:hover {
+            transform: rotate(180deg);
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #7f8c8d;
+        }
+
+        /* 分组快捷入口 */
+        .quick-groups {
+            padding: 0 10px;
+            margin-bottom: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .quick-group-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8fbff;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .quick-group-item:hover {
+            background: #e8f4fc;
+            transform: translateX(3px);
+        }
+
+        .quick-group-item .group-name {
+            color: #5a6c7d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-group-item .group-name i {
+            color: #3498db;
+            font-size: 12px;
+        }
+
+        .quick-group-item .group-badge {
+            background: #3498db;
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* 快捷操作 */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            padding: 0 10px;
+            margin-bottom: 10px;
+        }
+
+        .quick-action-btn {
+            flex: 1;
+            padding: 10px;
+            background: #f8fbff;
+            border: 1px solid #e8f4fc;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #5a6c7d;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quick-action-btn:hover {
+            background: #e8f4fc;
+            color: #3498db;
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        /* 账号数量显示 */
+        .sidebar-footer {
+            padding: 15px;
+            background: linear-gradient(135deg, #e8f4fc 0%, #d6eaf8 100%);
+            border-radius: 10px;
+            text-align: center;
+            margin-top: auto;
+            position: relative;
+        }
+
+        .sidebar-footer .account-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sidebar-footer .account-info i {
+            color: #3498db;
+            font-size: 18px;
+        }
+
+        .sidebar-footer .account-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-bottom: 3px;
+        }
+
+        .sidebar-footer .account-count {
+            font-size: 26px;
+            font-weight: 700;
+            color: #3498db;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: #ffffff;
+            transform: rotate(20deg);
+        }
+
+        .theme-toggle i {
+            color: #3498db;
+            font-size: 12px;
+        }
+
+        /* 深色主题 */
+        body.dark-theme {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body.dark-theme .sidebar {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-theme .sidebar-header {
+            border-bottom-color: #2a2a4a;
+        }
+
+        body.dark-theme .sidebar-header h2 {
+            color: #5dade2;
+        }
+
+        body.dark-theme .menu-label {
+            color: #6c7a89;
+        }
+
+        body.dark-theme .sidebar ul li a {
+            color: #b0bec5;
+        }
+
+        body.dark-theme .sidebar ul li a:hover {
+            background: linear-gradient(135deg, #2a2a4a 0%, #1f3a5f 100%);
+            color: #5dade2;
+        }
+
+        body.dark-theme .stat-item.stat-valid {
+            background: linear-gradient(135deg, #1e4620 0%, #2d5a2e 100%);
+        }
+
+        body.dark-theme .stat-item.stat-invalid {
+            background: linear-gradient(135deg, #4a1c1c 0%, #5c2727 100%);
+        }
+
+        body.dark-theme .stat-item.stat-checking {
+            background: linear-gradient(135deg, #4a4020 0%, #5c5027 100%);
+        }
+
+        body.dark-theme .stat-item.stat-unchecked {
+            background: linear-gradient(135deg, #3a3a4a 0%, #4a4a5a 100%);
+        }
+
+        body.dark-theme .stat-value {
+            color: #ecf0f1;
+        }
+
+        body.dark-theme .stat-refresh {
+            color: #5dade2;
+        }
+
+        body.dark-theme .quick-group-item {
+            background: #2a2a4a;
+        }
+
+        body.dark-theme .quick-group-item:hover {
+            background: #1f3a5f;
+        }
+
+        body.dark-theme .quick-group-item .group-name {
+            color: #b0bec5;
+        }
+
+        body.dark-theme .quick-action-btn {
+            background: #2a2a4a;
+            border-color: #3a3a5a;
+            color: #b0bec5;
+        }
+
+        body.dark-theme .quick-action-btn:hover {
+            background: #1f3a5f;
+            color: #5dade2;
+            border-color: #5dade2;
+        }
+
+        body.dark-theme .sidebar-footer {
+            background: linear-gradient(135deg, #2a2a4a 0%, #1f3a5f 100%);
+        }
+
+        body.dark-theme .sidebar-footer .account-label {
+            color: #6c7a89;
+        }
+
+        body.dark-theme .sidebar-footer .account-count {
+            color: #5dade2;
+        }
+
+        body.dark-theme .theme-toggle {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-theme .theme-toggle i {
+            color: #f1c40f;
+        }
+
+        body.dark-theme .content {
+            background: transparent;
+        }
+
+        body.dark-theme .content h1 {
+            color: #ecf0f1;
+        }
+
+        body.dark-theme .toolbar {
+            background: #1a1a2e;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-theme .toolbar .search-box {
+            background: #2a2a4a;
+            border-color: #3a3a5a;
+        }
+
+        body.dark-theme .toolbar .search-box input {
+            color: #ecf0f1;
+        }
+
+        body.dark-theme .toolbar .group-select {
+            background: #2a2a4a;
+            border-color: #3a3a5a;
+            color: #b0bec5;
+        }
+
+        body.dark-theme .email-table {
+            background: #1a1a2e;
+        }
+
+        body.dark-theme .email-table th {
+            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        }
+
+        body.dark-theme .email-table td {
+            color: #b0bec5;
+            border-bottom-color: #2a2a4a;
+        }
+
+        body.dark-theme .email-table tbody tr:hover {
+            background: linear-gradient(135deg, #2a2a4a 0%, #1f3a5f 100%);
+        }
+
+        body.dark-theme .no-data {
+            background: #1a1a2e;
+            color: #6c7a89;
+        }
+
+        body.dark-theme .pagination button {
+            background: #2a2a4a;
+            border-color: #3a3a5a;
+            color: #b0bec5;
+        }
+
+        body.dark-theme .pagination button:hover:not(.active) {
+            background: #1f3a5f;
+            color: #5dade2;
+        }
+
+        body.dark-theme #items-per-page {
+            background: #2a2a4a;
+            border-color: #3a3a5a;
+            color: #b0bec5;
+        }
+
+        body.dark-theme .group-management {
+            background: #1a1a2e;
+        }
+
+        body.dark-theme .group-item {
+            border-color: #2a2a4a;
+        }
+
+        body.dark-theme .group-item:hover {
+            background: #2a2a4a;
+        }
+
+        body.dark-theme .group-item .group-name {
+            color: #ecf0f1;
+        }
+
+        body.dark-theme .add-group-form {
+            background: #16213e;
+            border-top-color: #2a2a4a;
+        }
+
+        body.dark-theme .add-group-form input {
+            background: #2a2a4a;
+            border-color: #3a3a5a;
+            color: #ecf0f1;
+        }
+
+        /* 内容区域样式 */
+        .content {
+            flex-grow: 1;
+            padding: 25px 30px;
+            margin-left: 220px;
+            min-height: 100vh;
+        }
+
+        .content h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        #emails.content-section.active {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 50px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 工具栏样式 */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: #ffffff;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.08);
+        }
+
+        .toolbar .search-box {
+            display: flex;
+            align-items: center;
+            background: #f8fbff;
+            border: 1px solid #d6eaf8;
+            border-radius: 8px;
+            padding: 0 12px;
+            flex: 1;
+            max-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .toolbar .search-box:focus-within {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .toolbar .search-box i {
+            color: #a0b4c4;
+            font-size: 14px;
+        }
+
+        .toolbar .search-box input {
+            border: none;
+            background: transparent;
+            padding: 10px;
+            flex: 1;
+            font-size: 14px;
+            color: #2c3e50;
+            outline: none;
+        }
+
+        .toolbar .search-box input::placeholder {
+            color: #a0b4c4;
+        }
+
+        .toolbar .group-select {
+            padding: 10px 15px;
+            border: 1px solid #d6eaf8;
+            border-radius: 8px;
+            background: #f8fbff;
+            color: #5a6c7d;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .toolbar .group-select:focus {
+            border-color: #3498db;
+        }
+
+        .toolbar-btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .toolbar-btn i {
+            font-size: 14px;
+        }
+
+        .toolbar-btn.btn-compact {
+            padding: 8px 12px;
+            font-size: 12px;
+            gap: 5px;
+        }
+
+        .toolbar-btn.btn-compact i {
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.35);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #3498db;
+            border: 1px solid #d6eaf8;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fbff;
+            border-color: #3498db;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #ec7063 100%);
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(231, 76, 60, 0.35);
+        }
+
+        /* 表格样式 */
+        .email-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(52, 152, 219, 0.08);
+        }
+
+        #emails .email-table {
+            margin-top: 0;
+        }
+
+        .email-table th,
+        .email-table td {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 13px;
+            color: #5a6c7d;
+        }
+
+        .email-table th {
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            color: #ffffff;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .email-table tbody tr {
+            border-bottom: 1px solid #f0f8ff;
+            transition: all 0.2s ease;
+        }
+
+        .email-table tbody tr:hover {
+            background: linear-gradient(135deg, #f8fbff 0%, #e8f4fc 100%);
+        }
+
+        .email-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .email-table .id-col {
+            width: 50px;
+            text-align: center;
+            color: #a0b4c4;
+            font-weight: 500;
+        }
+
+        .email-table .token-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .email-table .token-valid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .email-table .token-checking {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .email-table .token-invalid {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .email-table .permission-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #e8f4fc;
+            color: #3498db;
+        }
+
+        .email-table .group-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #e8f4fc 0%, #d6eaf8 100%);
+            color: #3498db;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .email-table .actions {
+            white-space: nowrap;
+        }
+
+        .email-table .actions button {
+            padding: 6px 14px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .email-table .actions button.view {
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            color: #ffffff;
+        }
+
+        .email-table .actions button.view:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .email-table .actions button.delete {
+            background: linear-gradient(135deg, #e74c3c 0%, #ec7063 100%);
+            color: #ffffff;
+        }
+
+        .email-table .actions button.delete:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+        }
+
+        /* 分页样式 */
+        .pagination-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        #emails .pagination-section {
+            margin-top: auto;
+            padding-top: 16px;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pagination-tools {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 8px 14px;
+            border: 1px solid #d6eaf8;
+            border-radius: 6px;
+            background-color: #ffffff;
+            color: #5a6c7d;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button.active {
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            color: #ffffff;
+            border-color: transparent;
+        }
+
+        .pagination button:hover:not(.active) {
+            background: #f8fbff;
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        #items-per-page {
+            padding: 8px 15px;
+            border: 1px solid #d6eaf8;
+            border-radius: 6px;
+            background-color: white;
+            color: #5a6c7d;
+            font-size: 13px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #7f8c8d;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .page-jump input {
+            width: 78px;
+            height: 34px;
+            padding: 0 10px;
+            border: 1px solid #d6eaf8;
+            border-radius: 6px;
+            background-color: white;
+            color: #2c3e50;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .page-jump input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.12);
+        }
+
+        .page-total {
+            color: #95a5a6;
+            font-size: 12px;
+        }
+
+        /* 无数据提示 */
+        .no-data {
+            text-align: center;
+            padding: 18px 20px;
+            color: #a0b4c4;
+            font-size: 15px;
+            background: #ffffff;
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+
+        .no-data i {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: block;
+            color: #d6eaf8;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 62, 80, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(52, 152, 219, 0.2);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content h3 {
+            margin: 0 0 15px;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .modal-content p {
+            color: #7f8c8d;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-progress {
+            display: none;
+            margin: -6px 0 20px;
+            text-align: left;
+        }
+
+        .modal-progress.active {
+            display: block;
+        }
+
+        .modal-progress-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #5d6d7e;
+        }
+
+        .modal-progress-track {
+            width: 100%;
+            height: 10px;
+            border-radius: 999px;
+            background: #eaf4fb;
+            overflow: hidden;
+            border: 1px solid #d6eaf8;
+        }
+
+        .modal-progress-bar {
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            transition: width 0.25s ease;
+        }
+
+        .modal-progress-note {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+
+        .modal-content.is-progress button {
+            display: none;
+        }
+
+        .modal-content button {
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.35);
+        }
+
+        /* 导入弹窗样式 */
+        .import-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 62, 80, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .import-modal-content {
+            background-color: #ffffff;
+            padding: 0;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(52, 152, 219, 0.2);
+            max-width: 550px;
+            width: 90%;
+            animation: modalIn 0.3s ease;
+            overflow: hidden;
+        }
+
+        .import-modal-header {
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            color: #ffffff;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .import-modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .import-modal-header .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .import-modal-header .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .import-tabs {
+            display: flex;
+            border-bottom: 1px solid #e8f4fc;
+        }
+
+        .import-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            color: #7f8c8d;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .import-tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+            background: #f8fbff;
+        }
+
+        .import-tab i {
+            margin-right: 8px;
+        }
+
+        .import-tab-content {
+            padding: 25px;
+        }
+
+        .import-panel {
+            display: none;
+        }
+
+        .import-panel.active {
+            display: block;
+        }
+
+        .import-panel textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 1px solid #d6eaf8;
+            border-radius: 10px;
+            font-size: 13px;
+            resize: vertical;
+            outline: none;
+            font-family: 'Consolas', monospace;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .import-panel textarea:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .import-panel .file-upload-area {
+            border: 2px dashed #d6eaf8;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .import-panel .file-upload-area:hover {
+            border-color: #3498db;
+            background: #f8fbff;
+        }
+
+        .import-panel .file-upload-area i {
+            font-size: 40px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .import-panel .file-upload-area p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .import-panel .file-upload-area .file-name {
+            margin-top: 10px;
+            color: #3498db;
+            font-weight: 500;
+        }
+
+        .import-hint {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8fbff;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        .import-hint code {
+            background: #e8f4fc;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #3498db;
+        }
+
+        .import-actions {
+            padding: 20px 25px;
+            background: #f8fbff;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* 邮件查看弹窗 */
+        .mail-view-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 62, 80, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .mail-view-content {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(52, 152, 219, 0.2);
+            width: 95%;
+            max-width: 1100px;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            animation: modalIn 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mail-view-header {
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            color: #ffffff;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mail-view-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .mail-view-header .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mail-view-header .refresh-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .mail-view-header .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .mail-view-header .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .mail-view-tabs {
+            display: flex;
+            background: #f8fbff;
+            border-bottom: 1px solid #e8f4fc;
+        }
+
+        .mail-view-tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            color: #7f8c8d;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .mail-view-tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+            background: #ffffff;
+        }
+
+        .mail-view-tab i {
+            margin-right: 8px;
+        }
+
+        .mail-view-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .mail-list-panel {
+            width: 350px;
+            border-right: 1px solid #e8f4fc;
+            overflow-y: auto;
+            background: #f8fbff;
+        }
+
+        .mail-list-item {
+            padding: 15px 18px;
+            border-bottom: 1px solid #e8f4fc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mail-list-item:hover {
+            background: #ffffff;
+        }
+
+        .mail-list-item.active {
+            background: #ffffff;
+            border-left: 3px solid #3498db;
+        }
+
+        .mail-list-item .mail-sender {
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 13px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mail-list-item .mail-subject {
+            color: #5a6c7d;
+            font-size: 12px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mail-list-item .mail-date {
+            color: #a0b4c4;
+            font-size: 11px;
+        }
+
+        .mail-content-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .mail-content-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e8f4fc;
+            background: #ffffff;
+        }
+
+        .mail-content-header h4 {
+            margin: 0 0 10px;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .mail-content-header .mail-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .mail-content-body {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+
+        .mail-content-body .mail-text {
+            color: #5a6c7d;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .mail-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #a0b4c4;
+        }
+
+        .mail-empty i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #d6eaf8;
+        }
+
+        /* 批量复制弹窗 */
+        .copy-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 62, 80, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .copy-modal-content {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(52, 152, 219, 0.2);
+            max-width: 350px;
+            width: 90%;
+            animation: modalIn 0.3s ease;
+        }
+
+        .copy-modal-content h3 {
+            margin: 0 0 20px;
+            color: #2c3e50;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .copy-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .copy-option {
+            padding: 12px 15px;
+            background: #f8fbff;
+            border: 1px solid #d6eaf8;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #5a6c7d;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .copy-option:hover {
+            border-color: #3498db;
+            background: #e8f4fc;
+            color: #3498db;
+        }
+
+        .copy-option i {
+            font-size: 16px;
+        }
+
+        /* 分组管理样式 */
+        .group-management {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(52, 152, 219, 0.08);
+            overflow: hidden;
+        }
+
+        .group-list {
+            padding: 20px;
+        }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border: 1px solid #e8f4fc;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .group-item:hover {
+            border-color: #3498db;
+            background: #f8fbff;
+        }
+
+        .group-item .group-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .group-item .group-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e8f4fc 0%, #d6eaf8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3498db;
+            font-size: 18px;
+        }
+
+        .group-item .group-name {
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .group-item .group-count {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .group-item .group-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .group-item .group-actions button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .group-item .group-actions .edit-btn {
+            background: #e8f4fc;
+            color: #3498db;
+        }
+
+        .group-item .group-actions .delete-btn {
+            background: #fdeaea;
+            color: #e74c3c;
+        }
+
+        .add-group-form {
+            padding: 20px;
+            border-top: 1px solid #e8f4fc;
+            background: #f8fbff;
+        }
+
+        .add-group-form .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-group-form input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #d6eaf8;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .add-group-form input:focus {
+            border-color: #3498db;
+        }
+
+        /* Loading 样式 */
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            border-radius: 16px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #e8f4fc;
+            border-top-color: #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 复选框美化 */
+        .email-table input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #3498db;
+        }
+
+        /* Token expiry indicators */
+        .token-expiry {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .expiry-ok {
+            background: #d4efdf;
+            color: #27ae60;
+        }
+        .expiry-notice {
+            background: #d5f5e3;
+            color: #229954;
+        }
+        .expiry-warning {
+            background: #fdebd0;
+            color: #f39c12;
+        }
+        .expiry-danger {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+        .expiry-critical {
+            background: #e74c3c;
+            color: #fff;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        /* ===== 深色主题 - 模态框 & 邮件查看器 ===== */
+
+        /* 通用模态框 */
+        body.dark-theme .modal-content {
+            background: #1e2a3a;
+            color: #e0e0e0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        body.dark-theme .modal-content h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .modal-content p {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .modal-content button {
+            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+            color: #ffffff;
+        }
+
+        body.dark-theme .modal-progress-track {
+            background: #1a1a2e;
+            border-color: #2a2a4a;
+        }
+
+        body.dark-theme .modal-progress-meta {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .modal-progress-note {
+            color: #888;
+        }
+
+        /* 导入弹窗 */
+        body.dark-theme .import-modal-content {
+            background: #1e2a3a;
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .import-tabs {
+            border-bottom-color: #2a2a4a;
+        }
+
+        body.dark-theme .import-tab {
+            background: #16213e;
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .import-tab:hover {
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .import-tab.active {
+            background: #3498db;
+            color: #fff;
+            border-bottom-color: #3498db;
+        }
+
+        body.dark-theme .import-tab-content {
+            background: #1e2a3a;
+        }
+
+        body.dark-theme .import-panel textarea {
+            background: #1a1a2e;
+            color: #e0e0e0;
+            border-color: #2a2a4a;
+        }
+
+        body.dark-theme .import-panel textarea:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        body.dark-theme .file-upload-area {
+            background: #1a1a2e;
+            border-color: #2a2a4a;
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .file-upload-area:hover {
+            border-color: #3498db;
+            background: #16213e;
+        }
+
+        body.dark-theme .file-upload-area p {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .import-hint {
+            background: #1a1a2e;
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .import-hint code {
+            background: #2a2a4a;
+            color: #5dade2;
+        }
+
+        body.dark-theme .import-actions {
+            background: #16213e;
+        }
+
+        /* 邮件查看弹窗 */
+        body.dark-theme .mail-view-content {
+            background: #1e2a3a;
+        }
+
+        body.dark-theme .mail-view-header {
+            background: linear-gradient(135deg, #1a2a4a, #2a3a5a);
+        }
+
+        body.dark-theme .mail-view-tabs {
+            background: #16213e;
+            border-bottom-color: #2a2a4a;
+        }
+
+        body.dark-theme .mail-view-tab {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .mail-view-tab:hover {
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .mail-view-tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+            background: #1e2a3a;
+        }
+
+        body.dark-theme .mail-list-panel {
+            background: #16213e;
+            border-color: #2a2a4a;
+        }
+
+        body.dark-theme .mail-list-item {
+            color: #e0e0e0;
+            border-color: #2a2a4a;
+        }
+
+        body.dark-theme .mail-list-item:hover {
+            background: #2a3a5a;
+        }
+
+        body.dark-theme .mail-list-item.active {
+            background: #0f3460;
+            border-left-color: #3498db;
+        }
+
+        body.dark-theme .mail-list-item .mail-sender {
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .mail-list-item .mail-subject {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .mail-list-item .mail-date {
+            color: #888;
+        }
+
+        body.dark-theme .mail-content-panel {
+            background: #1e2a3a;
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .mail-content-header {
+            border-color: #2a2a4a;
+            background: #1e2a3a;
+        }
+
+        body.dark-theme .mail-content-header h4 {
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .mail-content-header .mail-meta {
+            color: #888;
+        }
+
+        body.dark-theme .mail-content-body {
+            background: #1e2a3a;
+        }
+
+        body.dark-theme .mail-content-body .mail-text {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .mail-empty {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .mail-empty i {
+            color: #2a2a4a;
+        }
+
+        body.dark-theme .mail-sender {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .mail-subject {
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .mail-date {
+            color: #888;
+        }
+
+        /* 批量复制弹窗 */
+        body.dark-theme .copy-modal-content {
+            background: #1e2a3a;
+            color: #e0e0e0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        body.dark-theme .copy-modal-content h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .copy-option {
+            background: #16213e;
+            color: #e0e0e0;
+            border-color: #2a2a4a;
+        }
+
+        body.dark-theme .copy-option:hover {
+            background: #2a3a5a;
+            border-color: #3498db;
+            color: #5dade2;
+        }
+
+        body.dark-theme .copy-option i {
+            color: #5dade2;
+        }
+
+        /* 批量分组弹窗 */
+        body.dark-theme .batch-group-content {
+            background: #1e2a3a;
+            color: #e0e0e0;
+        }
+
+        body.dark-theme #batch-group-modal .modal-content {
+            background: #1e2a3a;
+            color: #e0e0e0;
+        }
+
+        body.dark-theme #batch-group-modal .modal-content h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark-theme #batch-group-modal .group-select,
+        body.dark-theme #batch-group-select {
+            background: #1a1a2e;
+            color: #e0e0e0;
+            border-color: #2a2a4a;
+        }
+
+        /* 工具栏补充 */
+        body.dark-theme .toolbar button {
+            border-color: #2a2a4a;
+        }
+
+        body.dark-theme .toolbar select {
+            background: #1a1a2e;
+            color: #e0e0e0;
+            border-color: #2a2a4a;
+        }
+
+        /* 分页补充 */
+        body.dark-theme .pagination span {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme #page-jump-input,
+        body.dark-theme .page-jump input {
+            background: #1a1a2e;
+            color: #e0e0e0;
+            border-color: #2a2a4a;
+        }
+
+        body.dark-theme .page-jump {
+            color: #b0b0b0;
+        }
+
+        body.dark-theme .page-total {
+            color: #888;
+        }
+
+        /* 导入格式提示 */
+        body.dark-theme .import-format-hint {
+            background: #1a1a2e;
+            color: #b0b0b0;
+            border-color: #2a2a4a;
+        }
+
+        /* Loading overlay in dark mode */
+        body.dark-theme .loading-overlay {
+            background-color: rgba(26, 26, 46, 0.9);
+        }
+
+        body.dark-theme .loading-spinner {
+            border-color: #2a2a4a;
+            border-top-color: #3498db;
+        }
+
+        /* Token expiry in dark mode */
+        body.dark-theme .expiry-ok {
+            background: #1e4620;
+            color: #6ddb8a;
+        }
+
+        body.dark-theme .expiry-notice {
+            background: #1e4620;
+            color: #5ddb7a;
+        }
+
+        body.dark-theme .expiry-warning {
+            background: #4a3a1a;
+            color: #f5c842;
+        }
+
+        body.dark-theme .expiry-danger {
+            background: #4a1c1c;
+            color: #f08080;
+        }
+
+        body.dark-theme .expiry-critical {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        /* ===== 移动端适配（完全独立布局） ===== */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+
+            /* ---- 侧边栏 → 顶部完整面板 ---- */
+            .sidebar {
+                position: relative; width: 100%; height: auto;
+                padding: 12px; flex-direction: column; gap: 0;
+                overflow: visible;
+            }
+
+            /* 标题行：图标 + 名称 居中，时间在标题下方居中 */
+            .sidebar-header {
+                display: flex; flex-direction: column; align-items: center;
+                margin-bottom: 6px; gap: 2px;
+            }
+            .sidebar-header .logo-icon { width: 32px; height: 32px; font-size: 14px; }
+            .sidebar-header h2 { font-size: 15px; margin: 2px 0 0; }
+            .sidebar-header .current-time {
+                font-size: 10px; margin-top: 2px; color: #7f8c8d;
+                text-align: center; width: 100%;
+            }
+
+            /* 主菜单：两列等宽网格 */
+            .sidebar-menu { margin-top: 6px; overflow: visible; }
+            .sidebar-menu .menu-label:first-child { display: none; }
+            .sidebar-menu .menu-label { font-size: 10px; margin: 8px 0 4px; }
+            .sidebar-menu ul {
+                display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+            }
+            .sidebar-menu ul li a {
+                padding: 8px; font-size: 12px; border-radius: 8px;
+                text-align: center; justify-content: center;
+            }
+
+            /* 快捷统计：2x2网格，全部可见 */
+            .quick-stats {
+                display: grid !important; grid-template-columns: 1fr 1fr;
+                gap: 4px; margin-top: 4px; overflow: visible;
+            }
+            .stat-item {
+                padding: 6px 8px; flex: none; border-radius: 8px;
+                display: flex; align-items: center; gap: 6px;
+            }
+            .stat-item i { font-size: 11px; }
+            .stat-item .stat-value { font-size: 15px; }
+            .stat-item .stat-label { font-size: 9px; }
+            .stat-refresh { font-size: 10px !important; }
+
+            /* 分组快捷入口：横向滚动，全部可见 */
+            .quick-groups {
+                display: flex !important; gap: 6px; overflow-x: auto; overflow-y: visible;
+                max-height: none; padding: 4px 0; -webkit-overflow-scrolling: touch;
+            }
+            .quick-group-item {
+                flex-shrink: 0; padding: 5px 10px; font-size: 11px;
+                border-radius: 6px; white-space: nowrap;
+            }
+
+            /* 快捷操作：可见，居中一行 */
+            .quick-actions {
+                display: flex !important; gap: 6px; margin-top: 4px;
+                justify-content: center; overflow: visible;
+            }
+            .quick-action-btn { width: 36px; height: 36px; font-size: 14px; }
+
+            /* 底栏：账号总数 + 主题切换，可见 */
+            .sidebar-footer {
+                display: flex !important; align-items: center; justify-content: space-between;
+                padding: 6px 0 0; margin-top: 8px;
+                border-top: 1px solid rgba(0,0,0,.08);
+                overflow: visible; background: transparent; border-radius: 0;
+            }
+            .sidebar-footer .account-label { font-size: 10px; }
+            .sidebar-footer .account-count { font-size: 14px; }
+            .theme-toggle {
+                position: static; width: 32px; height: 32px; font-size: 14px;
+            }
+            .sidebar-footer .theme-toggle { display: inline-flex !important; }
+
+            /* ---- 内容区 ---- */
+            .content { margin-left: 0; padding: 10px; min-height: auto; }
+            .content h1 { font-size: 16px; margin-bottom: 8px; }
+
+            /* ---- 工具栏：两列网格 ---- */
+            .toolbar {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px !important;
+            }
+            .toolbar .search-box { grid-column: 1 / -1; }
+            .toolbar .search-box input { font-size: 13px; width: 100%; }
+            .toolbar .group-select { font-size: 12px; padding: 8px; }
+            .toolbar-btn {
+                font-size: 12px; padding: 8px 6px;
+                text-align: center; justify-content: center; white-space: nowrap;
+            }
+            .toolbar > div[style*="width:100%"] { display: none !important; }
+
+            /* ---- 表格 → 卡片（flex行排列） ---- */
+            .email-table { display: block; }
+            .email-table thead { display: none; }
+            .email-table tbody { display: flex; flex-direction: column; gap: 8px; }
+            .email-table tbody tr {
+                display: flex; flex-wrap: wrap; align-items: center;
+                background: #fff; border: 1px solid #e8f0fe;
+                border-radius: 10px; padding: 10px 12px;
+                box-shadow: 0 1px 4px rgba(0,0,0,.05);
+                position: relative;
+            }
+            .email-table tbody tr:hover { background: #f0f7ff; }
+
+            /* checkbox — 右上角 */
+            .email-table tbody td:nth-child(1) {
+                order: 0; position: absolute; top: 10px; right: 10px;
+            }
+            /* ID — 隐藏 */
+            .email-table tbody td:nth-child(2) { display: none; }
+
+            /* 邮箱 — Line 1, 全宽 */
+            .email-table tbody td:nth-child(3) {
+                order: 1; width: 100%;
+                font-size: 14px; font-weight: 600; color: #2c3e50;
+                padding-right: 30px;
+                overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            }
+            /* 密码 — Line 2, 全宽 */
+            .email-table tbody td:nth-child(4) {
+                order: 2; width: 100%;
+                font-size: 12px; color: #7f8c8d; margin-top: 2px;
+            }
+            .email-table tbody td:nth-child(4)::before { content: "密码: "; color: #aaa; font-size: 11px; }
+
+            /* 分组 + 令牌状态 + 权限 + 有效期 — Line 3, 同一行flex */
+            .email-table tbody td:nth-child(5),
+            .email-table tbody td:nth-child(6),
+            .email-table tbody td:nth-child(7),
+            .email-table tbody td:nth-child(8) {
+                order: 3; flex-shrink: 0;
+                display: inline-flex !important; align-items: center;
+                font-size: 11px; margin-top: 6px; margin-right: 4px;
+            }
+
+            /* 操作按钮 — Line 4, 全宽，等宽按钮 */
+            .email-table tbody td:last-child {
+                order: 4; width: 100%;
+                display: flex !important; gap: 6px;
+                padding-top: 8px; margin-top: 8px;
+                border-top: 1px solid #f0f0f0;
+            }
+            .email-table tbody td:last-child button {
+                flex: 1; padding: 8px 0; font-size: 12px;
+                border-radius: 6px; text-align: center;
+                display: flex; align-items: center; justify-content: center; gap: 4px;
+            }
+
+            /* 暗色模式卡片 */
+            body.dark-theme .email-table tbody tr { background: #1e2a3a; border-color: #2a3a5a; }
+            body.dark-theme .email-table tbody tr:hover { background: #253548; }
+            body.dark-theme .email-table tbody td:nth-child(3) { color: #e0e0e0; }
+            body.dark-theme .email-table tbody td:nth-child(4) { color: #8899aa; }
+            body.dark-theme .email-table tbody td:last-child { border-top-color: #2a3a5a; }
+            body.dark-theme .sidebar-header .current-time { color: #8899aa; }
+
+            /* ---- 分页 ---- */
+            .pagination-section { flex-direction: column; gap: 8px; padding: 8px 0; }
+            .pagination { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+            .pagination button { padding: 6px 10px; font-size: 11px; min-width: 32px; }
+            .pagination-tools { flex-wrap: wrap; gap: 6px; justify-content: center; }
+            .page-jump input { width: 48px; font-size: 12px; }
+            .page-jump span, .page-total { font-size: 11px; }
+            #items-per-page { font-size: 11px; padding: 5px; }
+
+            /* ---- 弹窗 ---- */
+            .modal-content { width: 92% !important; max-width: 92%; padding: 16px; }
+            .modal-content h3 { font-size: 15px; }
+            .import-modal-content { width: 96%; max-height: 88vh; overflow-y: auto; padding: 14px; }
+            .import-modal-content textarea { height: 110px; font-size: 13px; }
+            .import-tab { font-size: 12px; padding: 8px 14px; }
+            .import-hint { font-size: 11px; }
+            .import-actions { gap: 8px; }
+            .import-actions button { flex: 1; font-size: 13px; padding: 10px; }
+
+            .mail-view-content {
+                width: 100% !important; height: 100% !important;
+                max-width: 100% !important; border-radius: 0 !important;
+            }
+            .mail-view-header { padding: 10px 12px; }
+            .mail-view-header h3 { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 55vw; }
+            .mail-view-tabs .mail-view-tab { font-size: 12px; padding: 8px 14px; }
+            .mail-view-body { flex-direction: column; }
+            .mail-list-panel {
+                width: 100% !important; max-height: 35vh;
+                border-right: none !important; border-bottom: 1px solid #e8f0fe;
+                overflow-y: auto;
+            }
+            .mail-list-item { padding: 10px; }
+            .mail-sender { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .mail-subject { font-size: 12px; }
+            .mail-date { font-size: 10px; }
+            .mail-content-panel { width: 100% !important; padding: 12px; overflow-x: hidden; }
+            .mail-content-header h4 { font-size: 14px; word-break: break-word; }
+            .mail-content-body { font-size: 13px; overflow-x: auto; word-break: break-word; }
+            .mail-content-body img { max-width: 100% !important; height: auto !important; }
+            .mail-content-body table { max-width: 100% !important; font-size: 12px; }
+
+            .copy-modal-content { width: 92%; padding: 16px; }
+            .copy-option { padding: 14px; font-size: 14px; border-radius: 8px; }
+            .group-management { padding: 10px; }
+            .group-item { padding: 12px; }
+            .add-group-form .form-row { flex-direction: column; gap: 8px; }
+            .add-group-form input { width: 100%; font-size: 14px; padding: 10px; }
+            .add-group-form button { width: 100%; padding: 10px; }
+        }
+
+        @media (max-width: 400px) {
+            .sidebar-header h2 { font-size: 13px; }
+            .stat-item .stat-value { font-size: 13px; }
+            .content h1 { font-size: 14px; }
+            .toolbar-btn { font-size: 11px; padding: 7px 4px; }
+        }
+
+        /* ===== 全局配色方案 ===== */
+        /* 星空主题 (Starry Night) — 深蓝紫渐变 */
+        body.theme-starry {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+        body.theme-starry .sidebar {
+            background: linear-gradient(180deg, #1a1a3e 0%, #0f0c29 100%);
+            box-shadow: 2px 0 15px rgba(48, 43, 99, 0.3);
+        }
+        body.theme-starry .sidebar-header h2 { color: #c5b3f0; }
+        body.theme-starry .sidebar-menu ul li a { color: #b8a9d9; }
+        body.theme-starry .sidebar-menu ul li a.active { background: linear-gradient(135deg, #7b68ee, #9b59b6); color: #fff; }
+        body.theme-starry .sidebar-menu ul li a:hover { background: rgba(123, 104, 238, 0.15); }
+        body.theme-starry .content { color: #d5d0e6; }
+        body.theme-starry .content h1 { color: #c5b3f0; }
+        body.theme-starry .email-table thead { background: linear-gradient(135deg, #302b63, #7b68ee); }
+        body.theme-starry .email-table tbody tr { background: #1a1a3e; border-color: #302b63; color: #d5d0e6; }
+        body.theme-starry .email-table tbody tr:hover { background: #252350; }
+        body.theme-starry .toolbar-btn { border-color: #302b63; color: #c5b3f0; }
+        body.theme-starry .toolbar-btn.btn-primary { background: linear-gradient(135deg, #7b68ee, #9b59b6); color: #fff; }
+        body.theme-starry .toolbar-btn.btn-secondary { background: #1a1a3e; }
+        body.theme-starry .toolbar-btn.btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        body.theme-starry .search-box input { background: #1a1a3e; color: #d5d0e6; border-color: #302b63; }
+        body.theme-starry .group-select { background: #1a1a3e; color: #d5d0e6; border-color: #302b63; }
+        body.theme-starry .modal-content { background: #1a1a3e; color: #d5d0e6; }
+        body.theme-starry .import-modal-content { background: #1a1a3e; color: #d5d0e6; }
+        body.theme-starry .mail-view-content { background: #1a1a3e; }
+        body.theme-starry .mail-view-header { background: linear-gradient(135deg, #302b63, #7b68ee); }
+        body.theme-starry .mail-list-panel { background: #0f0c29; border-color: #302b63; }
+        body.theme-starry .mail-list-item { color: #d5d0e6; border-color: #302b63; }
+        body.theme-starry .mail-list-item:hover { background: #252350; }
+        body.theme-starry .mail-list-item.active { background: #302b63; }
+        body.theme-starry .mail-content-panel { background: #1a1a3e; color: #d5d0e6; }
+        body.theme-starry .stat-item { border-color: #302b63; }
+        body.theme-starry .sidebar-footer { border-top-color: #302b63; }
+        body.theme-starry .quick-group-item { background: #302b63; color: #c5b3f0; }
+        body.theme-starry .pagination button { background: #1a1a3e; color: #c5b3f0; border-color: #302b63; }
+        body.theme-starry .pagination button.active { background: #7b68ee; color: #fff; }
+        body.theme-starry .group-item { background: #1a1a3e; border-color: #302b63; color: #d5d0e6; }
+        body.theme-starry .copy-modal-content { background: #1a1a3e; color: #d5d0e6; }
+        body.theme-starry .copy-option { background: #0f0c29; color: #c5b3f0; border-color: #302b63; }
+        body.theme-starry .copy-option:hover { background: #302b63; }
+        body.theme-starry .import-panel textarea { background: #0f0c29; color: #d5d0e6; border-color: #302b63; }
+        body.theme-starry .file-upload-area { background: #0f0c29; border-color: #302b63; color: #b8a9d9; }
+        body.theme-starry .import-hint { background: #0f0c29; border-color: #302b63; color: #b8a9d9; }
+        body.theme-starry #page-jump-input { background: #1a1a3e; color: #d5d0e6; border-color: #302b63; }
+        body.theme-starry #items-per-page { background: #1a1a3e; color: #d5d0e6; border-color: #302b63; }
+        body.theme-starry .group-tag { background: #302b63; color: #c5b3f0; }
+        body.theme-starry .token-status { border-color: #302b63; }
+        body.theme-starry .no-data { color: #8878b8; }
+        body.theme-starry .pagination-section { background: transparent; }
+        body.theme-starry select option { background: #1a1a3e; color: #d5d0e6; }
+        body.theme-starry .mail-view-tabs { background: #0f0c29; }
+        body.theme-starry .mail-view-tab { color: #b8a9d9; }
+        body.theme-starry .mail-view-tab.active { background: #7b68ee; color: #fff; }
+        body.theme-starry .batch-group-content, body.theme-starry #batch-group-modal .modal-content { background: #1a1a3e; color: #d5d0e6; }
+        body.theme-starry .import-modal-header { background: linear-gradient(135deg, #302b63, #7b68ee); }
+        body.theme-starry .loading-overlay { background: rgba(15, 12, 41, 0.8); }
+        body.theme-starry .mail-content-body { color: #d5d0e6; }
+        body.theme-starry .mail-content-body a { color: #9b8ec4; }
+        body.theme-starry .toolbar { background: #1a1a3e; border-color: #302b63; }
+        body.theme-starry .email-table { background: #0f0c29; border-color: #302b63; }
+        body.theme-starry .email-table td { color: #d5d0e6; border-color: #302b63; }
+        body.theme-starry .email-table th { color: #fff; }
+        body.theme-starry .content-section { background: transparent; }
+        body.theme-starry .add-group-form input { background: #1a1a3e; color: #d5d0e6; border-color: #302b63; }
+        body.theme-starry .import-tab.active { background: #7b68ee; color: #fff; }
+        body.theme-starry .import-tab { background: #0f0c29; color: #b8a9d9; }
+        body.theme-starry .mail-meta span { color: #b8a9d9; }
+        body.theme-starry .mail-content-header { border-color: #302b63; }
+        body.theme-starry .mail-content-header h4 { color: #c5b3f0; }
+
+        /* 黄昏主题 (Dusk) — 暖橙红渐变 */
+        body.theme-dusk {
+            background: linear-gradient(135deg, #2c1810 0%, #4a2520 50%, #1a0f0a 100%);
+        }
+        body.theme-dusk .sidebar {
+            background: linear-gradient(180deg, #3a1f18 0%, #2c1810 100%);
+            box-shadow: 2px 0 15px rgba(74, 37, 32, 0.3);
+        }
+        body.theme-dusk .sidebar-header h2 { color: #f0c27a; }
+        body.theme-dusk .sidebar-menu ul li a { color: #d4a574; }
+        body.theme-dusk .sidebar-menu ul li a.active { background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; }
+        body.theme-dusk .sidebar-menu ul li a:hover { background: rgba(230, 126, 34, 0.15); }
+        body.theme-dusk .content { color: #e8d5c0; }
+        body.theme-dusk .content h1 { color: #f0c27a; }
+        body.theme-dusk .email-table thead { background: linear-gradient(135deg, #4a2520, #e67e22); }
+        body.theme-dusk .email-table tbody tr { background: #3a1f18; border-color: #4a2520; color: #e8d5c0; }
+        body.theme-dusk .email-table tbody tr:hover { background: #4a2520; }
+        body.theme-dusk .toolbar-btn { border-color: #4a2520; color: #f0c27a; }
+        body.theme-dusk .toolbar-btn.btn-primary { background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; }
+        body.theme-dusk .toolbar-btn.btn-secondary { background: #3a1f18; }
+        body.theme-dusk .toolbar-btn.btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        body.theme-dusk .search-box input { background: #3a1f18; color: #e8d5c0; border-color: #4a2520; }
+        body.theme-dusk .group-select { background: #3a1f18; color: #e8d5c0; border-color: #4a2520; }
+        body.theme-dusk .modal-content { background: #3a1f18; color: #e8d5c0; }
+        body.theme-dusk .import-modal-content { background: #3a1f18; color: #e8d5c0; }
+        body.theme-dusk .mail-view-content { background: #3a1f18; }
+        body.theme-dusk .mail-view-header { background: linear-gradient(135deg, #4a2520, #e67e22); }
+        body.theme-dusk .mail-list-panel { background: #2c1810; border-color: #4a2520; }
+        body.theme-dusk .mail-list-item { color: #e8d5c0; border-color: #4a2520; }
+        body.theme-dusk .mail-list-item:hover { background: #4a2520; }
+        body.theme-dusk .mail-list-item.active { background: #5a3020; }
+        body.theme-dusk .mail-content-panel { background: #3a1f18; color: #e8d5c0; }
+        body.theme-dusk .stat-item { border-color: #4a2520; }
+        body.theme-dusk .sidebar-footer { border-top-color: #4a2520; }
+        body.theme-dusk .quick-group-item { background: #4a2520; color: #f0c27a; }
+        body.theme-dusk .pagination button { background: #3a1f18; color: #f0c27a; border-color: #4a2520; }
+        body.theme-dusk .pagination button.active { background: #e67e22; color: #fff; }
+        body.theme-dusk .group-item { background: #3a1f18; border-color: #4a2520; color: #e8d5c0; }
+        body.theme-dusk .copy-modal-content { background: #3a1f18; color: #e8d5c0; }
+        body.theme-dusk .copy-option { background: #2c1810; color: #f0c27a; border-color: #4a2520; }
+        body.theme-dusk .copy-option:hover { background: #4a2520; }
+        body.theme-dusk .import-panel textarea { background: #2c1810; color: #e8d5c0; border-color: #4a2520; }
+        body.theme-dusk .file-upload-area { background: #2c1810; border-color: #4a2520; color: #d4a574; }
+        body.theme-dusk .import-hint { background: #2c1810; border-color: #4a2520; color: #d4a574; }
+        body.theme-dusk #page-jump-input { background: #3a1f18; color: #e8d5c0; border-color: #4a2520; }
+        body.theme-dusk #items-per-page { background: #3a1f18; color: #e8d5c0; border-color: #4a2520; }
+        body.theme-dusk .group-tag { background: #4a2520; color: #f0c27a; }
+        body.theme-dusk .token-status { border-color: #4a2520; }
+        body.theme-dusk .no-data { color: #c0956a; }
+        body.theme-dusk .pagination-section { background: transparent; }
+        body.theme-dusk select option { background: #3a1f18; color: #e8d5c0; }
+        body.theme-dusk .mail-view-tabs { background: #2c1810; }
+        body.theme-dusk .mail-view-tab { color: #d4a574; }
+        body.theme-dusk .mail-view-tab.active { background: #e67e22; color: #fff; }
+        body.theme-dusk .batch-group-content, body.theme-dusk #batch-group-modal .modal-content { background: #3a1f18; color: #e8d5c0; }
+        body.theme-dusk .import-modal-header { background: linear-gradient(135deg, #4a2520, #e67e22); }
+        body.theme-dusk .loading-overlay { background: rgba(26, 15, 10, 0.8); }
+        body.theme-dusk .mail-content-body { color: #e8d5c0; }
+        body.theme-dusk .mail-content-body a { color: #f0c27a; }
+        body.theme-dusk .toolbar { background: #3a1f18; border-color: #4a2520; }
+        body.theme-dusk .email-table { background: #2c1810; border-color: #4a2520; }
+        body.theme-dusk .email-table td { color: #e8d5c0; border-color: #4a2520; }
+        body.theme-dusk .email-table th { color: #fff; }
+        body.theme-dusk .content-section { background: transparent; }
+        body.theme-dusk .add-group-form input { background: #3a1f18; color: #e8d5c0; border-color: #4a2520; }
+        body.theme-dusk .import-tab.active { background: #e67e22; color: #fff; }
+        body.theme-dusk .import-tab { background: #2c1810; color: #d4a574; }
+        body.theme-dusk .mail-meta span { color: #d4a574; }
+        body.theme-dusk .mail-content-header { border-color: #4a2520; }
+        body.theme-dusk .mail-content-header h4 { color: #f0c27a; }
+
+        /* Mobile card theme support */
+        @media (max-width: 768px) {
+            body.theme-starry .email-table tbody tr { background: #1a1a3e; border-color: #302b63; }
+            body.theme-starry .email-table tbody tr:hover { background: #252350; }
+            body.theme-starry .email-table tbody td:nth-child(3) { color: #c5b3f0; }
+            body.theme-starry .email-table tbody td:nth-child(4) { color: #8878b8; }
+            body.theme-starry .email-table tbody td:last-child { border-top-color: #302b63; }
+
+            body.theme-dusk .email-table tbody tr { background: #3a1f18; border-color: #4a2520; }
+            body.theme-dusk .email-table tbody tr:hover { background: #4a2520; }
+            body.theme-dusk .email-table tbody td:nth-child(3) { color: #f0c27a; }
+            body.theme-dusk .email-table tbody td:nth-child(4) { color: #c0956a; }
+            body.theme-dusk .email-table tbody td:last-child { border-top-color: #4a2520; }
+        }

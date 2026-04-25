@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱系统</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body style="display:none;visibility:hidden;">
+
+    <!-- Loading 效果 -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h2 data-i18n="title">邮箱系统</h2>
+            <div class="current-time" id="current-time"></div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">主菜单</div>
+            <ul>
+                <li><a href="#" data-target="emails" class="active"><i class="fas fa-envelope"></i><span data-i18n="emailMgmt">邮箱管理</span></a></li>
+                <li><a href="#" data-target="groups"><i class="fas fa-folder"></i><span data-i18n="groupMgmt">分组管理</span></a></li>
+            </ul>
+
+            <div class="menu-label"><span data-i18n="quickStats">快捷统计</span> <i class="fas fa-sync-alt stat-refresh" onclick="refreshAllStatus()" title="检测所有"></i></div>
+            <div class="quick-stats">
+                <div class="stat-item stat-valid" onclick="filterByStatus('valid')" title="点击筛选正常账号">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="stat-content">
+                        <span class="stat-value" id="valid-count">0</span>
+                        <span class="stat-label" data-i18n="valid">正常</span>
+                    </div>
+                </div>
+                <div class="stat-item stat-invalid" onclick="filterByStatus('invalid')" title="点击筛选异常账号">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div class="stat-content">
+                        <span class="stat-value" id="invalid-count">0</span>
+                        <span class="stat-label" data-i18n="invalid">异常</span>
+                    </div>
+                </div>
+            </div>
+            <div class="quick-stats" style="margin-top:8px">
+                <div class="stat-item stat-checking" onclick="filterByStatus('checking')" title="点击筛选检测中账号">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <div class="stat-content">
+                        <span class="stat-value" id="checking-count">0</span>
+                        <span class="stat-label" data-i18n="checking">检测中</span>
+                    </div>
+                </div>
+                <div class="stat-item stat-unchecked" onclick="filterByStatus('unchecked')" title="点击筛选未检测账号">
+                    <i class="fas fa-question-circle"></i>
+                    <div class="stat-content">
+                        <span class="stat-value" id="unchecked-count">0</span>
+                        <span class="stat-label" data-i18n="unchecked">未检测</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-label" data-i18n="groupShortcut">分组快捷入口</div>
+            <div class="quick-groups" id="quick-groups">
+                <!-- 动态生成 -->
+            </div>
+
+            <div class="menu-label" data-i18n="quickActions">快捷操作</div>
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="openImportModal()" title="导入邮箱">
+                    <i class="fas fa-file-import"></i>
+                </button>
+                <button class="quick-action-btn" onclick="exportBackup()" title="导出备份">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="quick-action-btn" onclick="refreshAllStatus()" title="检测状态">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="quick-action-btn" id="ad-btn" title="广告位" style="display:none">
+                    <i class="fas fa-bullhorn"></i>
+                </button>
+
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="account-label" data-i18n="totalAccounts">账号总数</div>
+            <div class="account-info">
+                <i class="fas fa-users"></i>
+                <span class="account-count" id="account-count">0</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div class="theme-toggle" onclick="cycleTheme()" title="切换主题" style="cursor:pointer;width:30px;height:30px;font-size:13px;">
+                    <i class="fas fa-palette" id="theme-icon"></i>
+                </div>
+                <div class="theme-toggle" onclick="toggleLanguage()" title="言語/语言" style="cursor:pointer;width:30px;height:30px;font-size:13px;">
+                    <i class="fas fa-language"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- 邮箱管理内容 -->
+        <div id="emails" class="content-section active">
+            <h1 data-i18n="emailMgmt">邮箱管理</h1>
+            <div class="toolbar" style="flex-wrap:wrap;gap:6px;">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="搜索邮箱地址..." data-i18n-placeholder="search" oninput="searchEmails()">
+                </div>
+                <select class="group-select" id="filter-group" onchange="filterByGroup()">
+                    <option value="" data-i18n="allGroups">全部分组</option>
+                </select>
+                <select class="group-select" id="filter-status" onchange="filterByStatusSelect()">
+                    <option value="" data-i18n="allStatus">全部状态</option>
+                    <option value="valid">正常</option>
+                    <option value="invalid">异常</option>
+                    <option value="checking">检测中</option>
+                    <option value="unchecked">未检测</option>
+                </select>
+                <button class="toolbar-btn btn-primary" onclick="openImportModal()">
+                    <i class="fas fa-file-import"></i> <span data-i18n="importBtn">导入邮箱</span>
+                </button>
+                <button class="toolbar-btn btn-secondary" onclick="exportBackup()">
+                    <i class="fas fa-download"></i> <span data-i18n="exportBtn">导出备份</span>
+                </button>
+                <div style="width:100%;height:0;"></div>
+                <button class="toolbar-btn btn-secondary" onclick="openBatchGroupModal()">
+                    <i class="fas fa-layer-group"></i> <span data-i18n="batchGroup">批量分组</span>
+                </button>
+                <button class="toolbar-btn btn-secondary" onclick="openCopyModal()">
+                    <i class="fas fa-copy"></i> <span data-i18n="batchCopy">批量复制</span>
+                </button>
+                <button class="toolbar-btn btn-secondary" onclick="batchRenewSelected()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;">
+                    <i class="fas fa-sync-alt"></i> <span data-i18n="batchRenew">批量续期</span>
+                </button>
+                <button class="toolbar-btn btn-danger" onclick="batchDelete()">
+                    <i class="fas fa-trash"></i> <span data-i18n="batchDelete">批量删除</span>
+                </button>
+                <button class="toolbar-btn btn-danger btn-compact" onclick="clearAllData()">
+                    <i class="fas fa-trash-alt"></i> <span data-i18n="clearAll">清空邮箱</span>
+                </button>
+            </div>
+            <table class="email-table" id="email-table">
+                <thead>
+                    <tr>
+                        <th style="width:40px"><input type="checkbox" id="select-all"></th>
+                        <th class="id-col" data-i18n="colId">ID</th>
+                        <th data-i18n="colEmail">邮箱地址</th>
+                        <th data-i18n="colPassword">密码</th>
+                        <th data-i18n="colGroup">分组</th>
+                        <th data-i18n="colStatus">令牌状态</th>
+                        <th data-i18n="colPermission">权限类型</th>
+                        <th data-i18n="colExpiry">令牌有效期</th>
+                        <th data-i18n="colActions">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <div class="no-data" id="no-data">
+                <i class="fas fa-inbox"></i>
+                <span data-i18n="noData">暂无数据</span>
+            </div>
+            <div class="pagination-section">
+                <div class="pagination" id="pagination"></div>
+                <div class="pagination-tools">
+                    <div class="page-jump">
+                        <span>跳转到</span>
+                        <input type="number" id="page-jump-input" min="1" step="1" placeholder="&#39029;&#30721;" onkeydown="if(event.key==='Enter'){ jumpToPage(); }">
+                        <button class="toolbar-btn btn-secondary" type="button" onclick="jumpToPage()">&#36339;&#36716;</button>
+                        <span class="page-total" id="page-total">共 0 页</span>
+                    </div>
+                <select id="items-per-page" onchange="changeItemsPerPage(this.value)">
+                    <option value="10">10 条/页</option>
+                    <option value="20">20 条/页</option>
+                    <option value="50">50 条/页</option>
+                    <option value="100">100 条/页</option>
+                </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分组管理内容 -->
+        <div id="groups" class="content-section">
+            <h1 data-i18n="groupMgmt">分组管理</h1>
+            <div class="group-management">
+                <div class="group-list" id="group-list">
+                </div>
+                <div class="add-group-form">
+                    <div class="form-row">
+                        <input type="text" id="new-group-name" placeholder="输入新分组名称..." data-i18n-placeholder="newGroupPlaceholder">
+                        <button class="toolbar-btn btn-primary" onclick="addGroup()">
+                            <i class="fas fa-plus"></i><span data-i18n="addGroup">添加分组</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 普通提示模态框 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 id="modal-title"></h3>
+            <p id="modal-message"></p>
+            <div class="modal-progress" id="modal-progress">
+                <div class="modal-progress-meta">
+                    <span id="modal-progress-label"></span>
+                    <span id="modal-progress-pct"></span>
+                </div>
+                <div class="modal-progress-track">
+                    <div class="modal-progress-bar" id="modal-progress-bar"></div>
+                </div>
+                <div class="modal-progress-note" id="modal-progress-note"></div>
+            </div>
+            <button onclick="closeModal()" data-i18n="ok">确定</button>
+        </div>
+    </div>
+
+    <!-- 导入邮箱弹窗 -->
+    <div class="import-modal" id="import-modal">
+        <div class="import-modal-content">
+            <div class="import-modal-header">
+                <h3><i class="fas fa-file-import"></i> <span data-i18n="importTitle">导入邮箱</span></h3>
+                <button class="close-btn" onclick="closeImportModal()">&times;</button>
+            </div>
+            <div class="import-tabs">
+                <div class="import-tab active" data-tab="text" onclick="switchImportTab('text')">
+                    <i class="fas fa-keyboard"></i><span data-i18n="textInput">文本输入</span>
+                </div>
+                <div class="import-tab" data-tab="file" onclick="switchImportTab('file')">
+                    <i class="fas fa-file-alt"></i><span data-i18n="fileInput">文件导入</span>
+                </div>
+            </div>
+            <div class="import-tab-content">
+                <div class="import-panel active" id="import-panel-text">
+                    <textarea id="import-text" placeholder="每行一条数据，格式：邮箱----密码----ClientID----RefreshToken"></textarea>
+                    <div class="import-hint" data-i18n-html="importHint">
+                        <strong>格式说明：</strong>支持两种格式，每行一条：<br>
+                        格式1：<code>邮箱----密码----客户端ID----刷新令牌</code>（完整）<br>
+                        格式2：<code>邮箱----密码</code>（仅账密，无令牌功能）
+                    </div>
+                </div>
+                <div class="import-panel" id="import-panel-file">
+                    <div class="file-upload-area" id="file-upload-area" onclick="document.getElementById('file-input').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>点击选择文件</p>
+                        <div class="file-name" id="file-name"></div>
+                    </div>
+                    <input type="file" id="file-input" accept=".txt" style="display:none" onchange="handleFileSelect(event)">
+                    <div class="import-hint" data-i18n-html="importHint">
+                        <strong>格式说明：</strong>支持两种格式，每行一条：<br>
+                        格式1：<code>邮箱----密码----客户端ID----刷新令牌</code>（完整）<br>
+                        格式2：<code>邮箱----密码</code>（仅账密，无令牌功能）
+                    </div>
+                </div>
+            </div>
+            <div class="import-actions">
+                <button class="toolbar-btn btn-secondary" onclick="closeImportModal()"><span data-i18n="cancel">取消</span></button>
+                <button class="toolbar-btn btn-primary" onclick="importEmails()">
+                    <i class="fas fa-check"></i><span data-i18n="confirmImport">确认导入</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 邮件查看弹窗 -->
+    <div class="mail-view-modal" id="mail-view-modal">
+        <div class="mail-view-content">
+            <div class="mail-view-header">
+                <h3 id="mail-view-title" data-i18n="viewMail">查看邮件</h3>
+                <div class="header-actions">
+                    <button class="refresh-btn" onclick="refreshMails()">
+                        <i class="fas fa-sync-alt"></i><span data-i18n="refresh">刷新</span>
+                    </button>
+                    <button class="close-btn" onclick="closeMailViewModal()">&times;</button>
+                </div>
+            </div>
+            <div class="mail-view-tabs">
+                <div class="mail-view-tab active" data-mailbox="INBOX" onclick="switchMailbox('INBOX')">
+                    <i class="fas fa-inbox"></i><span data-i18n="inbox">收件箱</span>
+                </div>
+                <div class="mail-view-tab" data-mailbox="Junk" onclick="switchMailbox('Junk')">
+                    <i class="fas fa-trash-alt"></i><span data-i18n="junk">垃圾箱</span>
+                </div>
+            </div>
+            <div class="mail-view-body">
+                <div class="mail-list-panel" id="mail-list-panel">
+                </div>
+                <div class="mail-content-panel" id="mail-content-panel">
+                    <div class="mail-empty">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <p data-i18n="selectMailHint">选择一封邮件查看内容</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量复制弹窗 -->
+    <div class="copy-modal" id="copy-modal">
+        <div class="copy-modal-content">
+            <h3 data-i18n="copyTitle">选择复制内容</h3>
+            <div class="copy-options">
+                <div class="copy-option" onclick="batchCopy('email')">
+                    <i class="fas fa-envelope"></i>
+                    <span data-i18n="copyEmail">仅复制邮箱地址</span>
+                </div>
+                <div class="copy-option" onclick="batchCopy('password')">
+                    <i class="fas fa-key"></i>
+                    <span data-i18n="copyPwd">仅复制密码</span>
+                </div>
+                <div class="copy-option" onclick="batchCopy('both')">
+                    <i class="fas fa-copy"></i>
+                    <span data-i18n="copyBoth">复制邮箱和密码</span>
+                </div>
+            </div>
+            <div style="margin-top:20px;text-align:center">
+                <button class="toolbar-btn btn-secondary" onclick="closeCopyModal()"><span data-i18n="cancel">取消</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量设置分组弹窗 -->
+    <div class="modal" id="batch-group-modal">
+        <div class="modal-content">
+            <h3 data-i18n="batchGroupTitle">批量设置分组</h3>
+            <select id="batch-group-select" class="group-select" style="width:100%;margin:15px 0;padding:12px">
+                <option value="" data-i18n="selectGroup">选择分组</option>
+            </select>
+            <div style="display:flex;gap:10px;justify-content:center">
+                <button class="toolbar-btn btn-secondary" onclick="closeBatchGroupModal()"><span data-i18n="cancel">取消</span></button>
+                <button class="toolbar-btn btn-primary" onclick="applyBatchGroup()"><span data-i18n="confirm">确认</span></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

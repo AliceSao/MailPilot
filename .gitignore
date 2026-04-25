@@ -1,0 +1,51 @@
+# Data & secrets
+output/
+outlook*.txt
+tmp.*
+*.csv
+.kilo/worktrees/
+
+# Reference source (local only)
+reference/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Build intermediates
+build/
+*.spec
+*.bat
+build_*.sh
+
+# Android — only push source java + APK, ignore everything else
+android/.gradle/
+android/.idea/
+android/app/build/
+android/build/
+android/local.properties
+android/gradle/
+android/gradlew
+android/gradlew.bat
+android/app/src/main/assets/
+android/app/src/main/res/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker (legacy)
+docker-compose.yml
+Dockerfile
+.dockerignore
