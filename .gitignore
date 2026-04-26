@@ -4,7 +4,7 @@ outlook/
 outlook*.txt
 tmp.*
 *.csv
-.kilo/worktrees/
+.kilo/
 
 # Reference source (local only)
 reference/
