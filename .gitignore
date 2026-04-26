@@ -6,6 +6,9 @@ tmp.*
 *.csv
 .kilo/
 
+# Allow specific txt
+!TUTORIAL.txt
+
 # Reference & docs (local only)
 reference/
 docs/

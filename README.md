@@ -1,81 +1,71 @@
 # MailPilot
 
-轻量级 Outlook 邮箱管理系统，支持批量管理、令牌自动续期、邮件查看。
+Outlook 邮箱批量管理系统 / Outlookメール一括管理システム
 
-## 功能
+## 功能一览
 
-- **邮箱管理** — 导入/导出、搜索、分组、分页、批量操作
-- **令牌检测** — 通过 Microsoft Graph API 验证令牌有效性
-- **令牌续期** — 手动续期 refresh_token（每次续期获得新的 90 天有效期）
-- **到期预警** — 令牌有效期倒计时，≤10 天自动提醒
-- **邮件查看** — 收件箱 / 垃圾邮件，左右分栏布局
-- **数据持久化** — 服务端 JSON + CSV 存储
-- **深色模式** — 全局深色/浅色切换
+**账户管理** — 导入/导出/删除/搜索/分组/分页  
+**令牌检测** — Graph API + IMAP 双通道自动检测  
+**令牌续期** — 手动续期（单个/批量），倒数3天自动续期  
+**邮件查看** — 收件箱/垃圾箱，5分钟缓存  
+**验证码提取** — API 自动从邮件中提取数字验证码  
+**多语言** — 中文 / 日本語  
+**多主题** — 亮色 / 暗色 / 星空 / 黄昏  
+**多平台** — Windows / Android / Python 源码
 
 ## 快速开始
 
 ### Windows
+双击 `dist/windows/MailPilot.exe`
 
-双击运行 `dist/windows/MailPilot.exe`，浏览器自动打开。
+### Android
+安装 `dist/android/MailPilot.apk`
 
-### Linux / macOS
-
+### 源码运行
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
-
-浏览器打开 `http://127.0.0.1:1375`
-
-### Android
-
-使用 Android Studio 打开 `android/` 目录，构建 APK 安装到手机。  
-手机与运行后端的电脑需在同一局域网。
+浏览器自动打开 `http://127.0.0.1:1375`
 
 ## 导入格式
 
+支持两种格式，分隔符 `----`：
 ```
-邮箱----密码----客户端ID----刷新令牌
+邮箱----密码----客户端ID----刷新令牌    （完整，支持全部功能）
+邮箱----密码                              （仅账密，无令牌功能）
 ```
-
-每行一个账户，分隔符为 `----`。
-
-## 令牌续期说明
-
-Microsoft OAuth2 的 refresh_token 默认 90 天有效。每次使用旧 token 换取新 token 时，微软会同时返回一个**新的 refresh_token**（新的 90 天有效期），旧 token 立即作废。
-
-本系统**不会自动续期**。用户需要通过以下方式手动操作：
-
-- 表格中每行的 🔄 续期按钮
-- 工具栏的「批量续期」按钮
-
-续期前后建议导出备份。
 
 ## 项目结构
 
 ```
-app.py                → 后端 (FastAPI, ~200行)
-requirements.txt      → Python 依赖
+app.py              后端主服务（FastAPI）
+api.py              对外开放 API（批量操作/验证码提取）
+requirements.txt    依赖
 static/
-  index.html          → 页面结构
-  style.css           → 样式
-  app.js              → 前端逻辑
-android/              → Android WebView 项目
+  index.html        页面
+  style.css         样式
+  app.js            前端逻辑
+android/            Android 项目源码
 dist/
-  windows/
-    MailPilot.exe     → Windows 可执行文件
-output/               → 运行时数据 (自动创建)
-  accounts.json       → 账户数据
-  accounts.csv        → CSV 备份
-  groups.json         → 分组数据
+  windows/          MailPilot.exe
+  android/          MailPilot.apk
 ```
 
-## 技术栈
+## API
 
-- **后端**: Python / FastAPI / httpx
-- **前端**: Vanilla JS / Font Awesome
-- **API**: Microsoft Graph API v1.0
-- **移动端**: Android WebView
+详见 [API.md](API.md)
+
+## 令牌说明
+
+- Microsoft refresh_token 有效期 90 天
+- 每次续期获得新 token（新 90 天），旧 token 立即失效
+- 系统不自动续期（除首次导入和倒数3天），其余需用户手动操作
+- 支持两种 scope：Graph API (Mail.ReadWrite) 和 IMAP (IMAP.AccessAsUser.All)
+
+## 使用教程
+
+详见 [TUTORIAL.txt](TUTORIAL.txt)
 
 ## License
 
