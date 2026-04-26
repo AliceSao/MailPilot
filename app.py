@@ -529,30 +529,9 @@ app.mount("/", StaticFiles(directory=STATIC_DIR), name="static")
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import socket
-    import time
-
-    PORT = 1375
-    HOST = "127.0.0.1"
-
-    # Wait up to 10 seconds for the port to become available
-    for attempt in range(20):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                s.bind((HOST, PORT))
-                break  # port is free
-            except OSError:
-                if attempt == 0:
-                    logger.info("Port %d is busy, waiting for it to be released...", PORT)
-                time.sleep(0.5)
-    else:
-        logger.error("Port %d is still in use after 10 seconds. Exiting.", PORT)
-        input("Press Enter to exit...")
-        sys.exit(1)
-
-    threading.Timer(1.5, lambda: webbrowser.open(f"http://{HOST}:{PORT}")).start()
+    threading.Timer(1.5, lambda: webbrowser.open("http://127.0.0.1:1375")).start()
     try:
-        uvicorn.run(app, host=HOST, port=PORT, log_level="info")
+        uvicorn.run(app, host="127.0.0.1", port=1375, log_level="info")
     except OSError as e:
-        logger.error("Failed to start server on port %d: %s", PORT, e)
+        logger.error("Port 1375 is already in use: %s", e)
         input("Press Enter to exit...")
