@@ -30,7 +30,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
+
+import javax.mail.*;
+import javax.mail.internet.*;
 
 import fi.iki.elonen.NanoHTTPD;
 import okhttp3.FormBody;
@@ -227,13 +231,19 @@ public class LocalServer extends NanoHTTPD {
                     errorJson("OAuth2 token exchange failed"));
         }
 
-        // 2. Fetch mails from Graph API
+        // 2. Fetch mails from Graph API, fall back to IMAP on auth failure
         try {
             List<Map<String, String>> mails = fetchMailsGraph(accessToken, mailbox, 20);
             return newJsonResponse(Response.Status.OK, gson.toJson(mails));
         } catch (GraphAuthException e) {
-            return newJsonResponse(Response.Status.UNAUTHORIZED,
-                    errorJson("Graph API auth failed"));
+            // Graph API returned 401/403, try IMAP fallback
+            try {
+                String imapResult = fetchMailsImap(email, accessToken, mailbox);
+                return newJsonResponse(Response.Status.OK, imapResult);
+            } catch (Exception imapErr) {
+                return newJsonResponse(Response.Status.UNAUTHORIZED,
+                        errorJson("Both Graph and IMAP failed"));
+            }
         } catch (Exception e) {
             return newJsonResponse(Response.Status.INTERNAL_ERROR,
                     errorJson(e.getMessage()));
@@ -336,6 +346,71 @@ public class LocalServer extends NanoHTTPD {
 
             return results;
         }
+    }
+
+    // ========================================================================
+    // IMAP fallback — used when Graph API returns 401/403
+    // ========================================================================
+
+    private String fetchMailsImap(String emailAddr, String accessToken, String mailbox) throws Exception {
+        Properties props = new Properties();
+        props.put("mail.imap.ssl.enable", "true");
+        props.put("mail.imap.auth.mechanisms", "XOAUTH2");
+        props.put("mail.imap.port", "993");
+        props.put("mail.imap.connectiontimeout", "15000");
+        props.put("mail.imap.timeout", "15000");
+
+        javax.mail.Session session = javax.mail.Session.getInstance(props);
+        Store store = session.getStore("imap");
+        store.connect("outlook.office365.com", emailAddr, accessToken);
+
+        String folderName = "INBOX";
+        if ("JunkEmail".equals(mailbox) || "Junk".equals(mailbox)) folderName = "Junk";
+
+        Folder folder = store.getFolder(folderName);
+        folder.open(Folder.READ_ONLY);
+
+        int count = folder.getMessageCount();
+        int start = Math.max(1, count - 19);
+        Message[] messages = folder.getMessages(start, count);
+
+        JsonArray arr = new JsonArray();
+        for (int i = messages.length - 1; i >= 0; i--) {
+            Message msg = messages[i];
+            JsonObject item = new JsonObject();
+
+            Address[] from = msg.getFrom();
+            item.addProperty("send", from != null && from.length > 0 ? from[0].toString() : "");
+            item.addProperty("subject", msg.getSubject() != null ? msg.getSubject() : "");
+            item.addProperty("date", msg.getSentDate() != null ? msg.getSentDate().toString() : "");
+
+            String textBody = "", htmlBody = "";
+            Object content = msg.getContent();
+            if (content instanceof String) {
+                if (msg.isMimeType("text/html")) htmlBody = (String) content;
+                else textBody = (String) content;
+            } else if (content instanceof Multipart) {
+                Multipart mp = (Multipart) content;
+                for (int j = 0; j < mp.getCount(); j++) {
+                    BodyPart bp = mp.getBodyPart(j);
+                    if (bp.isMimeType("text/plain") && textBody.isEmpty()) {
+                        Object c = bp.getContent();
+                        if (c instanceof String) textBody = (String) c;
+                    }
+                    if (bp.isMimeType("text/html") && htmlBody.isEmpty()) {
+                        Object c = bp.getContent();
+                        if (c instanceof String) htmlBody = (String) c;
+                    }
+                }
+            }
+            item.addProperty("text", textBody);
+            item.addProperty("html", htmlBody);
+            arr.add(item);
+        }
+
+        folder.close(false);
+        store.close();
+        return arr.toString();
     }
 
     // ========================================================================

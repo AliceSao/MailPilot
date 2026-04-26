@@ -1,6 +1,9 @@
 """Lightweight Outlook email management backend."""
 
 import asyncio
+import email as email_lib
+import email.header
+import imaplib
 import json
 import logging
 import os
@@ -157,7 +160,102 @@ async def fetch_mails_graph(access_token: str, mailbox: str, count: int = 20) ->
 
 
 # ---------------------------------------------------------------------------
-# API — mail (unchanged)
+# IMAP fallback (for tokens with IMAP scope instead of Graph scope)
+# ---------------------------------------------------------------------------
+
+IMAP_HOST = "outlook.office365.com"
+IMAP_PORT = 993
+
+
+def _decode_header(raw: str | None) -> str:
+    if not raw:
+        return ""
+    parts = email_lib.header.decode_header(raw)
+    decoded = []
+    for data, charset in parts:
+        if isinstance(data, bytes):
+            decoded.append(data.decode(charset or "utf-8", errors="replace"))
+        else:
+            decoded.append(data)
+    return "".join(decoded)
+
+
+def _get_body(msg) -> tuple[str, str]:
+    text_body, html_body = "", ""
+    if msg.is_multipart():
+        for part in msg.walk():
+            ct = part.get_content_type()
+            if part.get("Content-Disposition", "").startswith("attachment"):
+                continue
+            payload = part.get_payload(decode=True)
+            if payload is None:
+                continue
+            charset = part.get_content_charset() or "utf-8"
+            content = payload.decode(charset, errors="replace")
+            if ct == "text/plain" and not text_body:
+                text_body = content
+            elif ct == "text/html" and not html_body:
+                html_body = content
+    else:
+        payload = msg.get_payload(decode=True)
+        if payload:
+            charset = msg.get_content_charset() or "utf-8"
+            content = payload.decode(charset, errors="replace")
+            if msg.get_content_type() == "text/html":
+                html_body = content
+            else:
+                text_body = content
+    return text_body, html_body
+
+
+def _fetch_mails_imap(email_addr: str, access_token: str, mailbox: str, count: int = 20) -> list[dict]:
+    auth_string = f"user={email_addr}\x01auth=Bearer {access_token}\x01\x01"
+    conn = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT, timeout=20)
+    try:
+        conn.authenticate("XOAUTH2", lambda _: auth_string.encode())
+        conn.select(mailbox, readonly=True)
+        _, data = conn.search(None, "ALL")
+        msg_ids = data[0].split()
+        if not msg_ids:
+            return []
+        latest = msg_ids[-count:]
+        latest.reverse()
+        results = []
+        for mid in latest:
+            _, msg_data = conn.fetch(mid, "(RFC822)")
+            if not msg_data or not msg_data[0]:
+                continue
+            raw = msg_data[0][1]
+            msg = email_lib.message_from_bytes(raw)
+            sender = _decode_header(msg.get("From", ""))
+            subject = _decode_header(msg.get("Subject"))
+            date_str = msg.get("Date", "")
+            text_body, html_body = _get_body(msg)
+            results.append({
+                "send": sender,
+                "subject": subject,
+                "date": date_str,
+                "text": text_body,
+                "html": html_body,
+            })
+        return results
+    finally:
+        try:
+            conn.logout()
+        except Exception:
+            pass
+
+
+IMAP_FOLDER_MAP = {
+    "INBOX": "INBOX",
+    "Inbox": "INBOX",
+    "Junk": "Junk",
+    "JunkEmail": "Junk",
+}
+
+
+# ---------------------------------------------------------------------------
+# API — mail (with IMAP fallback)
 # ---------------------------------------------------------------------------
 
 @app.get("/api/mail-all")
@@ -187,20 +285,27 @@ async def mail_all(
     if not access_token:
         return JSONResponse(status_code=401, content={"error": "OAuth2 token exchange failed"})
 
-    # 2. Graph API fetch
+    # 2. Try Graph API first
     try:
         mails = await fetch_mails_graph(access_token, mailbox)
         return JSONResponse(content=mails)
-    except PermissionError:
-        return JSONResponse(status_code=401, content={"error": "Graph API auth failed"})
-    except httpx.HTTPStatusError as exc:
-        logger.error("Graph API error for %s: %s", email, exc)
-        status = exc.response.status_code
-        if status == 401 or status == 403:
-            return JSONResponse(status_code=401, content={"error": str(exc)})
-        return JSONResponse(status_code=500, content={"error": str(exc)})
+    except (PermissionError, httpx.HTTPStatusError) as graph_err:
+        logger.info("Graph API failed for %s, trying IMAP fallback: %s", email, graph_err)
+    except Exception as graph_err:
+        logger.info("Graph API error for %s, trying IMAP fallback: %s", email, graph_err)
+
+    # 3. IMAP fallback (for tokens with IMAP scope)
+    try:
+        imap_folder = IMAP_FOLDER_MAP.get(mailbox, mailbox)
+        mails = await asyncio.to_thread(_fetch_mails_imap, email, access_token, imap_folder)
+        return JSONResponse(content=mails)
+    except imaplib.IMAP4.error as imap_err:
+        err_str = str(imap_err).upper()
+        if "AUTHENTICATE" in err_str or "AUTH" in err_str:
+            return JSONResponse(status_code=401, content={"error": "Auth failed (both Graph and IMAP)"})
+        return JSONResponse(status_code=500, content={"error": str(imap_err)})
     except Exception as exc:
-        logger.error("Unexpected error for %s: %s", email, exc)
+        logger.error("Both Graph and IMAP failed for %s: %s", email, exc)
         return JSONResponse(status_code=500, content={"error": str(exc)})
 
 
