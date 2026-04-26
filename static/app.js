@@ -259,6 +259,8 @@
                                 d[idx].refreshToken = j.newRefreshToken;
                                 d[idx].tokenRenewedAt = j.tokenRenewedAt;
                                 localStorage.setItem('emailData', JSON.stringify(d));
+                                syncToBackend();
+                                updateTableRow(email, d[idx]);
                             }
                             success++;
                         } else { fail++; }
@@ -310,14 +312,24 @@
     function checkExpiryWarnings() {
         var data = JSON.parse(localStorage.getItem('emailData')) || [];
         var warnings = [];
+        var autoRenewEmails = [];
         data.forEach(function(item) {
             var days = getDaysRemaining(item.tokenRenewedAt);
             if (days >= 0 && days <= 10) {
-                warnings.push(item.email + ' (' + days + '天后过期)');
+                warnings.push(item.email + ' (' + days + t('daysLeft') + ')');
+            }
+            // 倒数三天内且有 token 的自动续期
+            if (days >= 0 && days <= 3 && item.refreshToken && item.clientId) {
+                autoRenewEmails.push(item.email);
             }
         });
         if (warnings.length > 0) {
-            showToast('⚠ ' + warnings.length + ' 个邮箱令牌即将过期', 'warning');
+            showToast('\u26a0 ' + warnings.length + ' ' + t('expiryWarning'));
+        }
+        // 自动续期倒数三天内的
+        if (autoRenewEmails.length > 0) {
+            showToast(t('batchRenewStart') + ' ' + autoRenewEmails.length + ' ' + t('accounts'));
+            batchRenewEmails(autoRenewEmails);
         }
     }
 
@@ -509,6 +521,13 @@
                 var tokenStatusText = itemData.tokenStatus === 'valid' ? t('statusValid') : t('statusInvalid');
                 row.cells[5].innerHTML = '<span class="token-status ' + tokenStatusClass + '">' + tokenStatusText + '</span>';
                 row.cells[6].innerHTML = '<span class="permission-type">' + itemData.permissionType + '</span>';
+                // 更新令牌有效期
+                if (row.cells[7]) {
+                    var days = getDaysRemaining(itemData.tokenRenewedAt);
+                    var cls = getExpiryClass(days);
+                    var txt = getExpiryText(days);
+                    row.cells[7].innerHTML = '<span class="token-expiry ' + cls + '">' + txt + '</span>';
+                }
             }
         });
     }
@@ -900,6 +919,8 @@
                                             ddd[ri].refreshToken = j.newRefreshToken;
                                             ddd[ri].tokenRenewedAt = j.tokenRenewedAt;
                                             localStorage.setItem('emailData', JSON.stringify(ddd));
+                                            syncToBackend();
+                                            updateTableRow(em, ddd[ri]);
                                         }
                                         procSuccess++;
                                     } else { procFail++; }
@@ -910,7 +931,10 @@
                         };
                         renewXhr.onerror = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
                         renewXhr.ontimeout = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
-                        renewXhr.send(JSON.stringify({ email: item.email, clientId: item.clientId, refreshToken: item.refreshToken }));
+                        // 从 localStorage 读最新 token（检测可能已更新）
+                        var freshD = JSON.parse(localStorage.getItem('emailData')) || [];
+                        var freshItem = freshD.find(function(x) { return x.email === em; });
+                        renewXhr.send(JSON.stringify({ email: em, clientId: freshItem ? freshItem.clientId : item.clientId, refreshToken: freshItem ? freshItem.refreshToken : item.refreshToken }));
                     } else {
                         procFail++;
                         procIdx++;
