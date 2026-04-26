@@ -30,6 +30,58 @@ python app.py
 ```
 浏览器自动打开 `http://127.0.0.1:1375`
 
+## 端口问题
+
+默认端口为 `1375`，如果启动时遇到以下错误：
+
+```
+[Errno 13] [WinError 10013] 以一种访问权限不允许的方式做了一个访问套接字的尝试。
+```
+
+这通常是 Windows 的 Hyper-V / WSL 动态端口保留机制将 1375 占用导致的。
+
+### 方法一：修改端口（推荐）
+
+打开 `app.py`，找到底部启动代码（约第 531 行），将 `1375` 改为其他端口（如 `9375`）：
+
+```python
+if __name__ == "__main__":
+    threading.Timer(1.5, lambda: webbrowser.open("http://127.0.0.1:9375")).start()
+    try:
+        uvicorn.run(app, host="127.0.0.1", port=9375, log_level="info")
+```
+
+> 建议选择 `8000-9999` 或 `49152-65535` 范围内的端口，避开系统保留区。
+
+### 方法二：释放被占用的端口
+
+以**管理员身份**打开 PowerShell，执行以下命令：
+
+```powershell
+# 1. 查看当前被排除的端口范围
+netsh int ipv4 show excludedportrange protocol=tcp
+
+# 2. 将 Windows 动态端口范围改为高位（避免占用低位端口）
+netsh int ipv4 set dynamic tcp start=49152 num=16384
+
+# 3. 重启 WinNAT 服务使其立即生效
+net stop winnat
+net start winnat
+
+# 4. 验证 1375 不再被排除
+netsh int ipv4 show excludedportrange protocol=tcp
+```
+
+如果端口被其他进程占用（错误码 `10048`），可查找并终止该进程：
+
+```powershell
+# 查找占用 1375 的进程
+netstat -ano | findstr ":1375"
+
+# 终止对应 PID 的进程（将 <PID> 替换为实际进程号）
+taskkill /F /PID <PID>
+```
+
 ## 导入格式
 
 支持两种格式，分隔符 `----`：
@@ -78,54 +130,6 @@ dist/
 ## 使用教程
 
 详见 [TUTORIAL.txt](TUTORIAL.txt)
-
-## 端口问题排查
-
-默认端口 `1375`，启动时若报错 `[WinError 10013]` 或 `[WinError 10048]`，参考以下方案。
-
-### 方案一：修改端口（推荐）
-
-打开 `app.py`，找到文件末尾的启动代码，将 3 处 `1375` 替换为新端口（如 `9375`）：
-
-```python
-if __name__ == "__main__":
-    threading.Timer(1.5, lambda: webbrowser.open("http://127.0.0.1:9375")).start()
-    try:
-        uvicorn.run(app, host="127.0.0.1", port=9375, log_level="info")
-    except OSError as e:
-        logger.error("Port 9375 is already in use: %s", e)
-        input("Press Enter to exit...")
-```
-
-> 建议选择 `2000` 以上、不与其他服务冲突的端口。
-
-### 方案二：释放被占用的端口
-
-**情况 A — 端口被旧进程占用（WinError 10048）**
-
-```bash
-# 查找占用端口的进程
-netstat -ano | findstr ":1375"
-
-# 终止对应进程（将 <PID> 替换为实际进程号）
-taskkill /F /PID <PID>
-```
-
-**情况 B — 端口被 Windows 系统保留（WinError 10013）**
-
-Windows 的 Hyper-V / WSL 会动态保留端口段，可能包含 `1375`：
-
-```bash
-# 查看当前被排除的端口范围
-netsh int ipv4 show excludedportrange protocol=tcp
-
-# 若 1375 在排除范围内，以管理员权限执行：
-netsh int ipv4 set dynamic tcp start=49152 num=16384
-net stop winnat
-net start winnat
-```
-
-执行后重启系统即可永久生效，Hyper-V 将只保留 `49152-65535` 段的端口。
 
 ## License
 
