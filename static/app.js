@@ -193,13 +193,13 @@
                     syncToBackend();
                     loadData();
                 }
-                showToast(email + ' 续期成功' + (result.data.mailAccessOk ? '，邮件访问正常' : ''), 'success');
+                showToast(email + ' ' + t('renewSuccess') + (result.data.mailAccessOk ? t('mailAccessOk') : ''), 'success');
             } else {
-                showModal('\u7eed\u671f\u5931\u8d25', email + '<br>' + (result.data.error || '\u672a\u77e5\u9519\u8bef'));
+                showModal(t('renewFail'), email + '<br>' + (result.data.error || t('networkError')));
             }
         })
         .catch(function(e) {
-            showModal('\u7eed\u671f\u5931\u8d25', email + '<br>\u7f51\u7edc\u9519\u8bef: ' + e.message);
+            showModal(t('renewFail'), email + '<br>' + t('networkError') + ': ' + e.message);
         });
     }
     window.renewTokenForEmail = renewTokenForEmail;
@@ -208,11 +208,11 @@
     window.batchRenewSelected = function() {
         var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
         if (checkboxes.length === 0) {
-            showModal('\u63d0\u793a', '\u8bf7\u5148\u9009\u62e9\u8981\u7eed\u671f\u7684\u90ae\u7bb1\uff01');
+            showModal(t('ok'), t('selectEmailFirst'));
             return;
         }
         var selectedEmails = Array.from(checkboxes).map(function(cb) { return cb.dataset.email; });
-        if (!confirm('\u5373\u5c06\u5bf9 ' + selectedEmails.length + ' \u4e2a\u90ae\u7bb1\u8fdb\u884c\u4ee4\u724c\u7eed\u671f\u3002\n\n\u26a0 \u7eed\u671f\u540e\u65e7\u4ee4\u724c\u5c06\u5931\u6548\uff01\n\u5efa\u8bae\u5148\u5bfc\u51fa\u5907\u4efd\u3002\n\n\u786e\u8ba4\u7eed\u671f\uff1f')) return;
+        if (!confirm(t('batchRenewConfirm1') + selectedEmails.length + t('batchRenewConfirm2'))) return;
         batchRenewEmails(selectedEmails);
     };
 
@@ -228,7 +228,7 @@
             if (current >= total) {
                 syncToBackend();
                 loadData();
-                showModal('\u7eed\u671f\u5b8c\u6210', '\u6210\u529f ' + success + ' \u4e2a\uff0c\u5931\u8d25 ' + fail + ' \u4e2a\u3002<br><br><strong style="color:#e74c3c">\u5efa\u8bae\u7acb\u5373\u5bfc\u51fa\u5907\u4efd\uff0c\u4fdd\u5b58\u6700\u65b0\u4ee4\u724c\u3002</strong>');
+                showModal(t('batchRenewDone'), t('successCount') + ' ' + success + ', ' + t('failCount') + ' ' + fail + '<br><br><strong style="color:#e74c3c">' + t('backupReminder') + '</strong>');
                 return;
             }
 
@@ -420,7 +420,7 @@
             row.innerHTML += '<td class="id-col">' + (globalIndex + 1) + '</td>' +
                 '<td>' + item.email + '</td>' +
                 '<td>' + item.password + '</td>' +
-                '<td><span class="group-tag">' + (item.group || '\u672a\u5206\u7ec4') + '</span></td>' +
+                '<td><span class="group-tag">' + (item.group || t('ungrouped')) + '</span></td>' +
                 '<td><span class="token-status ' + tokenStatusClass + '">' + tokenStatusText + '</span></td>' +
                 '<td><span class="permission-type">' + permissionType + '</span></td>' +
                 '<td>' + (function() {
@@ -470,10 +470,10 @@
                     newData[idx].permissionType = 'O2';
                 } else if (response.status === 401) {
                     newData[idx].tokenStatus = 'invalid';
-                    newData[idx].permissionType = '\u65e0\u6548';
+                    newData[idx].permissionType = t('statusInvalid');
                 } else {
                     newData[idx].tokenStatus = 'invalid';
-                    newData[idx].permissionType = '\u5f02\u5e38';
+                    newData[idx].permissionType = t('statusInvalid');
                 }
 
                 localStorage.setItem('emailData', JSON.stringify(newData));
@@ -506,7 +506,7 @@
             var emailCell = row.cells[2];
             if (emailCell && emailCell.textContent === email) {
                 var tokenStatusClass = itemData.tokenStatus === 'valid' ? 'token-valid' : 'token-invalid';
-                var tokenStatusText = itemData.tokenStatus === 'valid' ? '\u6b63\u5e38' : '\u5f02\u5e38';
+                var tokenStatusText = itemData.tokenStatus === 'valid' ? t('statusValid') : t('statusInvalid');
                 row.cells[5].innerHTML = '<span class="token-status ' + tokenStatusClass + '">' + tokenStatusText + '</span>';
                 row.cells[6].innerHTML = '<span class="permission-type">' + itemData.permissionType + '</span>';
             }
@@ -692,7 +692,7 @@
 
         var targetPage = parseInt(input.value, 10);
         if (isNaN(targetPage)) {
-            showModal('\u63d0\u793a', '\u8bf7\u8f93\u5165\u8981\u8df3\u8f6c\u7684\u9875\u7801\uff01');
+            showModal(t('ok'), t('inputContent'));
             return;
         }
 
@@ -749,7 +749,7 @@
         } else {
             var fileInput = document.getElementById('file-input');
             if (fileInput.files.length === 0) {
-                showModal('\u63d0\u793a', '\u8bf7\u9009\u62e9\u6587\u4ef6\uff01');
+                showModal(t('ok'), t('selectFile'));
                 return;
             }
             var reader = new FileReader();
@@ -761,7 +761,7 @@
         }
 
         if (!content.trim()) {
-            showModal('\u63d0\u793a', '\u8bf7\u8f93\u5165\u5bfc\u5165\u5185\u5bb9\uff01');
+            showModal(t('ok'), t('inputContent'));
             return;
         }
 
@@ -772,7 +772,7 @@
     function processImport(content, delimiter) {
         var lines = content.split('\n').filter(function (line) { return line.trim(); });
         if (lines.length === 0) {
-            showModal('\u63d0\u793a', '\u6ca1\u6709\u6709\u6548\u7684\u5bfc\u5165\u6570\u636e\uff01');
+            showModal(t('ok'), t('noValidData'));
             return;
         }
 
@@ -799,7 +799,7 @@
         });
 
         if (pendingEmails.length === 0) {
-            showModal('\u63d0\u793a', '\u6ca1\u6709\u6709\u6548\u7684\u90ae\u7bb1\u6570\u636e\uff01\u8bf7\u68c0\u67e5\u683c\u5f0f\u3002');
+            showModal(t('ok'), t('noValidData') + ' ' + t('checkFormat'));
             return;
         }
 
@@ -818,7 +818,7 @@
                     password: item.password,
                     clientId: item.clientId,
                     refreshToken: item.refreshToken,
-                    group: '\u672a\u5206\u7ec4',
+                    group: t('ungrouped'),
                     tokenRenewedAt: ''
                 });
                 importCount++;
@@ -830,36 +830,98 @@
         loadData();
         closeImportModal();
 
-        var message = t('importSuccess') + ' ' + importCount + ' ' + t('items') + '\uff01';
+        var message = t('importSuccess') + ' ' + importCount + ' ' + t('items');
         if (importCount < pendingEmails.length) {
             message += '<br><br><span style="color:#f39c12">' + (pendingEmails.length - importCount) + ' ' + t('emailExists') + '</span>';
         }
         showModal(t('importComplete'), message);
 
-        // 导入流程：先检测 → 检测完后自动续期 → 续期完后设置有效期
+        // 导入流程：逐个 检测→续期→下一个
         if (importCount > 0) {
             var newEmails = pendingEmails.filter(function(p) { return !existsBefore[p.email]; }).map(function(a) { return a.email; });
-            // 先检测全部
-            showToast(t('statusChecking') + '...');
-            var checkIdx = 0;
-            function checkNext() {
-                if (checkIdx >= newEmails.length) {
-                    // 检测完成，开始续期
-                    if (newEmails.length > 0) {
-                        batchRenewEmails(newEmails);
-                    }
+            showToast(t('importComplete') + ' - ' + t('statusChecking') + '...');
+            var procIdx = 0;
+            var procSuccess = 0;
+            var procFail = 0;
+            
+            function processNext() {
+                if (procIdx >= newEmails.length) {
+                    syncToBackend();
+                    loadData();
+                    showToast(t('importComplete') + ': ' + newEmails.length + ' ' + t('items') + ' (' + t('successCount') + ' ' + procSuccess + ')');
                     return;
                 }
-                var em = newEmails[checkIdx];
+                var em = newEmails[procIdx];
                 var d = JSON.parse(localStorage.getItem('emailData')) || [];
                 var item = d.find(function(x) { return x.email === em; });
-                if (item && item.clientId && item.refreshToken) {
-                    checkTokenStatus(item, 0);
+                
+                if (!item || !item.clientId || !item.refreshToken) {
+                    procFail++;
+                    procIdx++;
+                    setTimeout(processNext, 100);
+                    return;
                 }
-                checkIdx++;
-                setTimeout(checkNext, 300);
+                
+                // Step 1: Check token via /api/mail-all
+                var checkUrl = '/api/mail-all?refresh_token=' + encodeURIComponent(item.refreshToken) + '&client_id=' + encodeURIComponent(item.clientId) + '&email=' + encodeURIComponent(item.email) + '&mailbox=INBOX&response_type=json&password=';
+                
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', checkUrl, true);
+                xhr.timeout = 30000;
+                xhr.onload = function() {
+                    var dd = JSON.parse(localStorage.getItem('emailData')) || [];
+                    var idx = dd.findIndex(function(x) { return x.email === em; });
+                    if (idx !== -1) {
+                        if (xhr.status === 200 || xhr.status === 500) {
+                            dd[idx].tokenStatus = 'valid';
+                            dd[idx].permissionType = 'O2';
+                        } else {
+                            dd[idx].tokenStatus = 'invalid';
+                            dd[idx].permissionType = t('statusInvalid');
+                        }
+                        localStorage.setItem('emailData', JSON.stringify(dd));
+                        updateStats();
+                    }
+                    
+                    // Step 2: Renew token
+                    if (xhr.status === 200 || xhr.status === 500) {
+                        var renewXhr = new XMLHttpRequest();
+                        renewXhr.open('POST', '/api/renew-token', true);
+                        renewXhr.setRequestHeader('Content-Type', 'application/json');
+                        renewXhr.timeout = 30000;
+                        renewXhr.onload = function() {
+                            try {
+                                if (renewXhr.status === 200) {
+                                    var j = JSON.parse(renewXhr.responseText);
+                                    if (j.success) {
+                                        var ddd = JSON.parse(localStorage.getItem('emailData')) || [];
+                                        var ri = ddd.findIndex(function(x) { return x.email === em; });
+                                        if (ri !== -1) {
+                                            ddd[ri].refreshToken = j.newRefreshToken;
+                                            ddd[ri].tokenRenewedAt = j.tokenRenewedAt;
+                                            localStorage.setItem('emailData', JSON.stringify(ddd));
+                                        }
+                                        procSuccess++;
+                                    } else { procFail++; }
+                                } else { procFail++; }
+                            } catch(e) { procFail++; }
+                            procIdx++;
+                            setTimeout(processNext, 200);
+                        };
+                        renewXhr.onerror = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
+                        renewXhr.ontimeout = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
+                        renewXhr.send(JSON.stringify({ email: item.email, clientId: item.clientId, refreshToken: item.refreshToken }));
+                    } else {
+                        procFail++;
+                        procIdx++;
+                        setTimeout(processNext, 200);
+                    }
+                };
+                xhr.onerror = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
+                xhr.ontimeout = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
+                xhr.send();
             }
-            checkNext();
+            processNext();
         }
     }
 
@@ -877,7 +939,7 @@
     window.batchDelete = function () {
         var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
         if (checkboxes.length === 0) {
-            showModal('\u63d0\u793a', '\u8bf7\u9009\u62e9\u8981\u5220\u9664\u7684\u90ae\u7bb1\uff01');
+            showModal(t('ok'), t('selectEmailFirst'));
             return;
         }
 
@@ -889,7 +951,7 @@
         localStorage.setItem('emailData', JSON.stringify(newData));
         syncToBackend();
         loadData();
-        showModal('\u5220\u9664\u6210\u529f', '\u5df2\u5220\u9664 ' + checkboxes.length + ' \u4e2a\u90ae\u7bb1\uff01');
+        showModal(t('deleteSuccess'), t('deletedCount') + ' ' + checkboxes.length);
     };
 
     // 查看邮件
@@ -897,7 +959,7 @@
         var data = JSON.parse(localStorage.getItem('emailData')) || [];
         currentEmailData = data[index];
         currentMailbox = 'INBOX';
-        document.getElementById('mail-view-title').textContent = '\u67e5\u770b\u90ae\u4ef6 - ' + currentEmailData.email;
+        document.getElementById('mail-view-title').textContent = t('viewMail') + ' - ' + currentEmailData.email;
         document.querySelectorAll('.mail-view-tab').forEach(function (t) { t.classList.remove('active'); });
         document.querySelector('.mail-view-tab[data-mailbox="INBOX"]').classList.add('active');
         document.getElementById('mail-view-modal').style.display = 'flex';
@@ -948,13 +1010,13 @@
                                 renderMailListPanel([]);
                                 return Promise.resolve();
                             }
-                            throw new Error('\u670d\u52a1\u5668\u5185\u90e8\u9519\u8bef');
+                            throw new Error(t('networkError'));
                         });
                     }
                     if (response.status === 401) {
                         throw { status: 401 };
                     }
-                    throw new Error('\u8bf7\u6c42\u5931\u8d25\uff1a' + response.status);
+                    throw new Error(t('networkError') + ': ' + response.status);
                 }
                 return response.json();
             })
@@ -969,9 +1031,9 @@
             })
             .catch(function (error) {
                 if (error.status === 401) {
-                    showModal('\u63d0\u793a', '\u5bc6\u7801\u9a8c\u8bc1\u5931\u8d25\uff0c\u8bf7\u68c0\u67e5\u5bc6\u7801\u8bbe\u7f6e\u3002');
+                    showModal(t('ok'), t('passwordAuth'));
                 } else {
-                    showModal('\u9519\u8bef', '\u65e0\u6cd5\u52a0\u8f7d\u90ae\u4ef6\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002');
+                    showModal(t('ok'), t('loadMailFail'));
                 }
             })
             .finally(function () {
@@ -984,8 +1046,8 @@
         var contentPanel = document.getElementById('mail-content-panel');
 
         if (data.length === 0) {
-            panel.innerHTML = '<div class="mail-empty"><i class="fas fa-inbox"></i><p>\u6682\u65e0\u90ae\u4ef6</p></div>';
-            contentPanel.innerHTML = '<div class="mail-empty"><i class="fas fa-envelope-open-text"></i><p>\u9009\u62e9\u4e00\u5c01\u90ae\u4ef6\u67e5\u770b\u5185\u5bb9</p></div>';
+            panel.innerHTML = '<div class="mail-empty"><i class="fas fa-inbox"></i><p>' + t('noMail') + '</p></div>';
+            contentPanel.innerHTML = '<div class="mail-empty"><i class="fas fa-envelope-open-text"></i><p>' + t('selectMailHint') + '</p></div>';
             return;
         }
 
@@ -1017,7 +1079,7 @@
             '<span><i class="fas fa-calendar"></i> ' + item.date + '</span>' +
             '</div></div>' +
             '<div class="mail-content-body">' +
-            '<div class="mail-text">' + (item.html || item.text || '\u65e0\u5185\u5bb9') + '</div>' +
+            '<div class="mail-text">' + (item.html || item.text || t('noData')) + '</div>' +
             '</div>';
     };
 
@@ -1036,7 +1098,7 @@
     window.openCopyModal = function () {
         var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
         if (checkboxes.length === 0) {
-            showModal('\u63d0\u793a', '\u8bf7\u5148\u9009\u62e9\u8981\u590d\u5236\u7684\u90ae\u7bb1\uff01');
+            showModal(t('ok'), t('selectEmailFirst'));
             return;
         }
         document.getElementById('copy-modal').style.display = 'flex';
@@ -1063,15 +1125,15 @@
 
         navigator.clipboard.writeText(content).then(function () {
             window.closeCopyModal();
-            showModal('\u590d\u5236\u6210\u529f', '\u5df2\u590d\u5236 ' + selectedData.length + ' \u6761\u6570\u636e\u5230\u526a\u8d34\u677f\uff01');
+            showModal(t('ok'), t('batchCopy') + ' ' + selectedData.length + ' ' + t('items'));
         }).catch(function () {
-            showModal('\u590d\u5236\u5931\u8d25', '\u8bf7\u624b\u52a8\u590d\u5236\u3002');
+            showModal(t('ok'), t('networkError'));
         });
     };
 
     // 分组管理
     function loadGroups() {
-        var groups = JSON.parse(localStorage.getItem('emailGroups')) || ['\u9ed8\u8ba4\u5206\u7ec4'];
+        var groups = JSON.parse(localStorage.getItem('emailGroups')) || [t('defaultGroup')];
         var data = JSON.parse(localStorage.getItem('emailData')) || [];
         var groupList = document.getElementById('group-list');
 
@@ -1081,7 +1143,7 @@
                 '<div class="group-info">' +
                 '<div class="group-icon"><i class="fas fa-folder"></i></div>' +
                 '<div><div class="group-name">' + group + '</div>' +
-                '<div class="group-count">' + count + ' \u4e2a\u90ae\u7bb1</div></div></div>' +
+                '<div class="group-count">' + count + ' ' + t('accounts') + '</div></div></div>' +
                 '<div class="group-actions">' +
                 '<button class="edit-btn" onclick="editGroup(\'' + group + '\')"><i class="fas fa-edit"></i></button>' +
                 '<button class="delete-btn" onclick="deleteGroup(\'' + group + '\')"><i class="fas fa-trash"></i></button>' +
@@ -1092,13 +1154,13 @@
     window.addGroup = function () {
         var name = document.getElementById('new-group-name').value.trim();
         if (!name) {
-            showModal('\u63d0\u793a', '\u8bf7\u8f93\u5165\u5206\u7ec4\u540d\u79f0\uff01');
+            showModal(t('ok'), t('enterGroupName'));
             return;
         }
 
-        var groups = JSON.parse(localStorage.getItem('emailGroups')) || ['\u9ed8\u8ba4\u5206\u7ec4'];
+        var groups = JSON.parse(localStorage.getItem('emailGroups')) || [t('defaultGroup')];
         if (groups.includes(name)) {
-            showModal('\u63d0\u793a', '\u5206\u7ec4\u5df2\u5b58\u5728\uff01');
+            showModal(t('ok'), t('groupExists'));
             return;
         }
 
@@ -1108,11 +1170,11 @@
         document.getElementById('new-group-name').value = '';
         loadGroups();
         updateGroupSelects();
-        showModal('\u6210\u529f', '\u5206\u7ec4\u6dfb\u52a0\u6210\u529f\uff01');
+        showModal(t('ok'), t('groupAdded'));
     };
 
     window.editGroup = function (oldName) {
-        var newName = prompt('\u8bf7\u8f93\u5165\u65b0\u7684\u5206\u7ec4\u540d\u79f0\uff1a', oldName);
+        var newName = prompt(t('editGroupPrompt'), oldName);
         if (!newName || newName === oldName) return;
 
         var groups = JSON.parse(localStorage.getItem('emailGroups')) || [];
@@ -1137,7 +1199,7 @@
     };
 
     window.deleteGroup = function (name) {
-        if (!confirm('\u786e\u5b9a\u8981\u5220\u9664\u5206\u7ec4\u201c' + name + '\u201d\u5417\uff1f\u8be5\u5206\u7ec4\u4e0b\u7684\u90ae\u7bb1\u5c06\u53d8\u4e3a\u672a\u5206\u7ec4\u3002')) return;
+        if (!confirm(t('groupDeleteConfirm1') + name + t('groupDeleteConfirm2'))) return;
 
         var groups = JSON.parse(localStorage.getItem('emailGroups')) || [];
         var index = groups.indexOf(name);
@@ -1149,7 +1211,7 @@
             var data = JSON.parse(localStorage.getItem('emailData')) || [];
             data.forEach(function (item) {
                 if (item.group === name) {
-                    item.group = '\u672a\u5206\u7ec4';
+                    item.group = t('ungrouped');
                 }
             });
             localStorage.setItem('emailData', JSON.stringify(data));
@@ -1161,14 +1223,14 @@
     };
 
     function updateGroupSelects() {
-        var groups = JSON.parse(localStorage.getItem('emailGroups')) || ['\u9ed8\u8ba4\u5206\u7ec4'];
+        var groups = JSON.parse(localStorage.getItem('emailGroups')) || [t('defaultGroup')];
 
         var filterSelect = document.getElementById('filter-group');
-        filterSelect.innerHTML = '<option value="">\u5168\u90e8\u5206\u7ec4</option>' +
+        filterSelect.innerHTML = '<option value="">' + t('allGroups') + '</option>' +
             groups.map(function (g) { return '<option value="' + g + '">' + g + '</option>'; }).join('');
 
         var batchSelect = document.getElementById('batch-group-select');
-        batchSelect.innerHTML = '<option value="">\u9009\u62e9\u5206\u7ec4</option>' +
+        batchSelect.innerHTML = '<option value="">' + t('selectGroupFirst') + '</option>' +
             groups.map(function (g) { return '<option value="' + g + '">' + g + '</option>'; }).join('');
     }
 
@@ -1176,7 +1238,7 @@
     window.openBatchGroupModal = function () {
         var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
         if (checkboxes.length === 0) {
-            showModal('\u63d0\u793a', '\u8bf7\u5148\u9009\u62e9\u8981\u8bbe\u7f6e\u5206\u7ec4\u7684\u90ae\u7bb1\uff01');
+            showModal(t('ok'), t('selectEmailFirst'));
             return;
         }
         document.getElementById('batch-group-modal').style.display = 'flex';
@@ -1189,7 +1251,7 @@
     window.applyBatchGroup = function () {
         var group = document.getElementById('batch-group-select').value;
         if (!group) {
-            showModal('\u63d0\u793a', '\u8bf7\u9009\u62e9\u5206\u7ec4\uff01');
+            showModal(t('ok'), t('selectGroupFirst'));
             return;
         }
 
@@ -1207,7 +1269,7 @@
         syncToBackend();
         window.closeBatchGroupModal();
         loadData();
-        showModal('\u6210\u529f', '\u5df2\u4e3a ' + selectedEmails.length + ' \u4e2a\u90ae\u7bb1\u8bbe\u7f6e\u5206\u7ec4\uff01');
+        showModal(t('ok'), t('batchGroupDone') + selectedEmails.length + t('batchGroupDone2'));
     };
 
     // 模态框
@@ -1278,7 +1340,7 @@
 
         refs.progress.classList.add('active');
         refs.modalContent.classList.add('is-progress');
-        refs.label.textContent = progressOptions && progressOptions.label ? progressOptions.label : '\u5904\u7406\u8fdb\u5ea6';
+        refs.label.textContent = progressOptions && progressOptions.label ? progressOptions.label : t('statusChecking');
         refs.percent.textContent = percent + '%';
         refs.bar.style.width = percent + '%';
         refs.note.textContent = progressOptions && progressOptions.note ? progressOptions.note : '';
@@ -1364,7 +1426,7 @@
 
     // 分组快捷入口
     function updateQuickGroups() {
-        var groups = JSON.parse(localStorage.getItem('emailGroups')) || ['\u9ed8\u8ba4\u5206\u7ec4'];
+        var groups = JSON.parse(localStorage.getItem('emailGroups')) || [t('defaultGroup')];
         var data = JSON.parse(localStorage.getItem('emailData')) || [];
         var container = document.getElementById('quick-groups');
 
@@ -1392,7 +1454,7 @@
     window.refreshAllStatus = function () {
         var data = JSON.parse(localStorage.getItem('emailData')) || [];
         if (data.length === 0) {
-            showModal('\u63d0\u793a', '\u6682\u65e0\u6570\u636e\u53ef\u5237\u65b0\uff01');
+            showModal(t('ok'), t('noDataRefresh'));
             return;
         }
 
@@ -1440,7 +1502,7 @@
                     }
                 }).catch(function(){}).finally(function(){
                     loadData();
-                    showToast('\u68c0\u6d4b\u5b8c\u6210\uff0c\u5df2\u68c0\u6d4b ' + total + ' \u4e2a\u90ae\u7bb1\uff0c\u4ee4\u724c\u5df2\u81ea\u52a8\u7eed\u671f');
+                    showToast(t('statusChecking') + ' ' + t('ok') + ' - ' + total + ' ' + t('accounts'));
                 });
                 return;
             }
@@ -1469,7 +1531,7 @@
                             d[idx].permissionType = 'O2';
                         } else {
                             d[idx].tokenStatus = 'invalid';
-                            d[idx].permissionType = '\u65e0\u6548';
+                            d[idx].permissionType = t('statusInvalid');
                         }
                         localStorage.setItem('emailData', JSON.stringify(d));
                         syncToBackend();
@@ -1491,14 +1553,13 @@
     function showCheckingProgress(current, total) {
         var percent = total > 0 ? Math.round((current / total) * 100) : 0;
         var modalEl = document.getElementById('modal');
-        document.getElementById('modal-title').textContent = '\u6b63\u5728\u68c0\u6d4b';
+        document.getElementById('modal-title').textContent = t('statusChecking');
         document.getElementById('modal-message').innerHTML =
             '<div style="text-align:center">' +
             '<div style="font-size:32px;color:#3498db;margin-bottom:10px">' + percent + '%</div>' +
             '<div style="background:#e8f4fc;border-radius:10px;height:8px;overflow:hidden;margin-bottom:10px">' +
             '<div style="background:linear-gradient(90deg,#3498db,#5dade2);height:100%;width:' + percent + '%;transition:width 0.3s"></div></div>' +
-            '<div style="color:#7f8c8d;font-size:13px">\u5df2\u68c0\u6d4b ' + current + ' / ' + total + ' \u4e2a\u90ae\u7bb1</div>' +
-            '<div style="color:#aaa;font-size:11px;margin-top:8px">\u70b9\u51fb\u7a7a\u767d\u5904\u53ef\u5173\u95ed\u5f39\u7a97\uff0c\u68c0\u6d4b\u5728\u540e\u53f0\u7ee7\u7eed</div>' +
+            '<div style="color:#7f8c8d;font-size:13px">' + t('statusChecking') + ' ' + current + ' / ' + total + ' ' + t('accounts') + '</div>' +
             '</div>';
         // 隐藏"确定"按钮（检测中不需要）
         var okBtn = modalEl.querySelector('.modal-content button');
@@ -1527,7 +1588,7 @@
                     newData[newIdx].permissionType = 'O2';
                 } else {
                     newData[newIdx].tokenStatus = 'invalid';
-                    newData[newIdx].permissionType = '\u65e0\u6548';
+                    newData[newIdx].permissionType = t('statusInvalid');
                 }
 
                 localStorage.setItem('emailData', JSON.stringify(newData));
@@ -1558,7 +1619,7 @@
     window.clearAllData = function () {
         var data = JSON.parse(localStorage.getItem('emailData')) || [];
         if (data.length === 0) {
-            showModal('\u63d0\u793a', '\u6682\u65e0\u6570\u636e\u53ef\u6e05\u7a7a\uff01');
+            showModal(t('ok'), t('noDataRefresh'));
             return;
         }
 
@@ -1567,7 +1628,7 @@
         localStorage.removeItem('emailData');
         syncToBackend();
         loadData();
-        showModal('\u6210\u529f', '\u5df2\u6e05\u7a7a\u6240\u6709\u6570\u636e\uff01');
+        showModal(t('ok'), t('clearSuccess'));
     };
 
     // 主题切换
@@ -1674,7 +1735,7 @@
     // ===== 初始化 =====
     (function init() {
         if (!localStorage.getItem('emailGroups')) {
-            localStorage.setItem('emailGroups', JSON.stringify(['\u9ed8\u8ba4\u5206\u7ec4']));
+            localStorage.setItem('emailGroups', JSON.stringify([t('defaultGroup')]));
         }
 
         loadTheme();

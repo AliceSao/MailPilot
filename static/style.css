@@ -2204,6 +2204,10 @@
             .add-group-form .form-row { flex-direction: column; gap: 8px; }
             .add-group-form input { width: 100%; font-size: 14px; padding: 10px; }
             .add-group-form button { width: 100%; padding: 10px; }
+
+            /* 防止底部导航栏遮挡 */
+            .content { padding-bottom: 80px; }
+            .pagination-section { margin-bottom: 60px; }
         }
 
         @media (max-width: 400px) {
