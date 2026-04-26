@@ -87,19 +87,19 @@
 
             </div>
         </div>
-        <div class="sidebar-footer">
-            <div class="account-label" data-i18n="totalAccounts">账号总数</div>
-            <div class="account-info">
-                <i class="fas fa-users"></i>
-                <span class="account-count" id="account-count">0</span>
+        <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;padding:12px;">
+            <div class="theme-toggle" onclick="toggleLanguage()" title="言語/语言" style="cursor:pointer;">
+                <i class="fas fa-language"></i>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-                <div class="theme-toggle" onclick="cycleTheme()" title="切换主题" style="cursor:pointer;width:30px;height:30px;font-size:13px;">
-                    <i class="fas fa-palette" id="theme-icon"></i>
+            <div style="text-align:center;">
+                <div class="account-label" data-i18n="totalAccounts" style="font-size:10px;margin-bottom:2px;">账号总数</div>
+                <div class="account-info" style="display:flex;align-items:center;justify-content:center;gap:4px;">
+                    <i class="fas fa-users" style="font-size:14px;"></i>
+                    <span class="account-count" id="account-count" style="font-size:20px;font-weight:700;">0</span>
                 </div>
-                <div class="theme-toggle" onclick="toggleLanguage()" title="言語/语言" style="cursor:pointer;width:30px;height:30px;font-size:13px;">
-                    <i class="fas fa-language"></i>
-                </div>
+            </div>
+            <div class="theme-toggle" onclick="cycleTheme()" title="切换主题" style="cursor:pointer;">
+                <i class="fas fa-palette" id="theme-icon"></i>
             </div>
         </div>
     </div>
@@ -138,6 +138,9 @@
                 </button>
                 <button class="toolbar-btn btn-secondary" onclick="batchRenewSelected()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;">
                     <i class="fas fa-sync-alt"></i> <span data-i18n="batchRenew">批量续期</span>
+                </button>
+                <button class="toolbar-btn btn-secondary" onclick="batchCheckSelected()" style="background:linear-gradient(135deg,#3498db,#5dade2);color:#fff;">
+                    <i class="fas fa-search"></i> <span data-i18n="batchCheck">批量检测</span>
                 </button>
                 <button class="toolbar-btn btn-danger" onclick="batchDelete()">
                     <i class="fas fa-trash"></i> <span data-i18n="batchDelete">批量删除</span>

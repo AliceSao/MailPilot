@@ -20,7 +20,8 @@
             totalAccounts: '账号总数', search: '搜索邮箱地址...',
             allGroups: '全部分组', allStatus: '全部状态',
             importBtn: '导入邮箱', exportBtn: '导出备份', batchGroup: '批量分组',
-            batchCopy: '批量复制', batchRenew: '批量续期', batchDelete: '批量删除', clearAll: '清空邮箱',
+            batchCopy: '批量复制', batchRenew: '批量续期', batchCheck: '批量检测', batchDelete: '批量删除', clearAll: '清空邮箱',
+            checkBtn: '检测',
             colCheckbox: '', colId: 'ID', colEmail: '邮箱地址', colPassword: '密码',
             colGroup: '分组', colStatus: '令牌状态', colPermission: '权限类型',
             colExpiry: '令牌有效期', colActions: '操作',
@@ -68,7 +69,8 @@
             totalAccounts: 'アカウント数', search: 'メールアドレス検索...',
             allGroups: '全グループ', allStatus: '全ステータス',
             importBtn: 'インポート', exportBtn: 'エクスポート', batchGroup: '一括グループ',
-            batchCopy: '一括コピー', batchRenew: '一括更新', batchDelete: '一括削除', clearAll: '全削除',
+            batchCopy: '一括コピー', batchRenew: '一括更新', batchCheck: '一括検出', batchDelete: '一括削除', clearAll: '全削除',
+            checkBtn: '検出',
             colCheckbox: '', colId: 'ID', colEmail: 'メールアドレス', colPassword: 'パスワード',
             colGroup: 'グループ', colStatus: 'トークン状態', colPermission: '権限',
             colExpiry: '有効期限', colActions: '操作',
@@ -275,6 +277,36 @@
         doNext();
     }
 
+    // 单个检测
+    window.checkOneEmail = function(email) {
+        var data = JSON.parse(localStorage.getItem('emailData')) || [];
+        var item = data.find(function(d) { return d.email === email; });
+        if (!item) return;
+        if (_checkingEmails[email]) return;
+        showToast(t('statusChecking') + ': ' + email);
+        checkTokenStatus(item, 0);
+    };
+
+    // 批量检测（仅选中的）
+    window.batchCheckSelected = function() {
+        var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) {
+            showModal(t('ok'), t('selectEmailFirst'));
+            return;
+        }
+        var selectedEmails = Array.from(checkboxes).map(function(cb) { return cb.dataset.email; });
+        var data = JSON.parse(localStorage.getItem('emailData')) || [];
+        var count = 0;
+        selectedEmails.forEach(function(email, i) {
+            var item = data.find(function(d) { return d.email === email; });
+            if (item && !_checkingEmails[email]) {
+                setTimeout(function() { checkTokenStatus(item, 0); }, i * 300);
+                count++;
+            }
+        });
+        showToast(t('statusChecking') + ' ' + count + ' ' + t('accounts'));
+    };
+
     function checkExpiryWarnings() {
         var data = JSON.parse(localStorage.getItem('emailData')) || [];
         var warnings = [];
@@ -395,7 +427,8 @@
                 })() + '</td>' +
                 '<td class="actions">' +
                 '<button class="view" onclick="viewMails(' + globalIndex + ')"><i class="fas fa-eye"></i> ' + t('viewBtn') + '</button>' +
-                '<button onclick="renewTokenForEmail(\'' + item.email.replace(/'/g, "\\'") + '\')" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;margin:0 2px;" title="\u7eed\u671f"><i class="fas fa-sync-alt"></i></button>' +
+                '<button onclick="renewTokenForEmail(\'' + item.email.replace(/'/g, "\\'") + '\')" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;margin:0 2px;" title="' + t('renewBtn') + '"><i class="fas fa-sync-alt"></i></button>' +
+                '<button onclick="checkOneEmail(\'' + item.email.replace(/'/g, "\\'") + '\')" style="background:linear-gradient(135deg,#3498db,#5dade2);color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;margin:0 2px;" title="' + t('checkBtn') + '"><i class="fas fa-search"></i></button>' +
                 '<button class="delete" onclick="deleteEmail(' + globalIndex + ')"><i class="fas fa-trash"></i></button>' +
                 '</td>';
             emailTableBody.appendChild(row);
