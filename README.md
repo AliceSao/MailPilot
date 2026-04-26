@@ -79,6 +79,54 @@ dist/
 
 详见 [TUTORIAL.txt](TUTORIAL.txt)
 
+## 端口问题排查
+
+默认端口 `1375`，启动时若报错 `[WinError 10013]` 或 `[WinError 10048]`，参考以下方案。
+
+### 方案一：修改端口（推荐）
+
+打开 `app.py`，找到文件末尾的启动代码，将 3 处 `1375` 替换为新端口（如 `9375`）：
+
+```python
+if __name__ == "__main__":
+    threading.Timer(1.5, lambda: webbrowser.open("http://127.0.0.1:9375")).start()
+    try:
+        uvicorn.run(app, host="127.0.0.1", port=9375, log_level="info")
+    except OSError as e:
+        logger.error("Port 9375 is already in use: %s", e)
+        input("Press Enter to exit...")
+```
+
+> 建议选择 `2000` 以上、不与其他服务冲突的端口。
+
+### 方案二：释放被占用的端口
+
+**情况 A — 端口被旧进程占用（WinError 10048）**
+
+```bash
+# 查找占用端口的进程
+netstat -ano | findstr ":1375"
+
+# 终止对应进程（将 <PID> 替换为实际进程号）
+taskkill /F /PID <PID>
+```
+
+**情况 B — 端口被 Windows 系统保留（WinError 10013）**
+
+Windows 的 Hyper-V / WSL 会动态保留端口段，可能包含 `1375`：
+
+```bash
+# 查看当前被排除的端口范围
+netsh int ipv4 show excludedportrange protocol=tcp
+
+# 若 1375 在排除范围内，以管理员权限执行：
+netsh int ipv4 set dynamic tcp start=49152 num=16384
+net stop winnat
+net start winnat
+```
+
+执行后重启系统即可永久生效，Hyper-V 将只保留 `49152-65535` 段的端口。
+
 ## License
 
 MIT
