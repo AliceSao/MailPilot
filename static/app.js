@@ -19,7 +19,7 @@
             valid: '正常', invalid: '异常', checking: '检测中', unchecked: '未检测',
             totalAccounts: '账号总数', search: '搜索邮箱地址...',
             allGroups: '全部分组', allStatus: '全部状态',
-            importBtn: '导入邮箱', exportBtn: '导出备份', batchGroup: '批量分组',
+            importBtn: '导入邮箱', exportBtn: '导出备份', exportSelected: '导出选中', exportAll: '导出全部', batchGroup: '批量分组',
             batchCopy: '批量复制', batchRenew: '批量续期', batchCheck: '批量检测', batchDelete: '批量删除', clearAll: '清空邮箱',
             checkBtn: '检测',
             colCheckbox: '', colId: 'ID', colEmail: '邮箱地址', colPassword: '密码',
@@ -68,7 +68,7 @@
             valid: '正常', invalid: '異常', checking: '検出中', unchecked: '未検出',
             totalAccounts: 'アカウント数', search: 'メールアドレス検索...',
             allGroups: '全グループ', allStatus: '全ステータス',
-            importBtn: 'インポート', exportBtn: 'エクスポート', batchGroup: '一括グループ',
+            importBtn: 'インポート', exportBtn: 'エクスポート', exportSelected: '選択をエクスポート', exportAll: '全てエクスポート', batchGroup: '一括グループ',
             batchCopy: '一括コピー', batchRenew: '一括更新', batchCheck: '一括検出', batchDelete: '一括削除', clearAll: '全削除',
             checkBtn: '検出',
             colCheckbox: '', colId: 'ID', colEmail: 'メールアドレス', colPassword: 'パスワード',
@@ -1115,8 +1115,52 @@
 
     // 导出备份 (使用后端 API)
     window.exportBackup = function () {
-        window.location.href = '/api/export';
+        var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
+        
+        if (checkboxes.length > 0) {
+            // 有选中项——让用户选择
+            var allData = JSON.parse(localStorage.getItem('emailData')) || [];
+            var totalCount = allData.length;
+            
+            var choice = confirm(
+                t('exportBtn') + '\n\n' +
+                '1. OK = ' + t('exportSelected') + ' (' + checkboxes.length + ')\n' +
+                '2. ' + t('cancel') + ' = ' + t('exportAll') + ' (' + totalCount + ')'
+            );
+            
+            if (choice) {
+                // 导出选中的
+                var selectedEmails = Array.from(checkboxes).map(function(cb) { return cb.dataset.email; });
+                var selectedData = allData.filter(function(item) { return selectedEmails.includes(item.email); });
+                downloadAsFile(selectedData);
+            } else {
+                // 导出全部
+                window.location.href = '/api/export';
+            }
+        } else {
+            // 没有选中——直接导出全部
+            window.location.href = '/api/export';
+        }
     };
+    
+    function downloadAsFile(accounts) {
+        var lines = accounts.map(function(a) {
+            return a.email + '----' + (a.password || '') + '----' + (a.clientId || '') + '----' + (a.refreshToken || '');
+        });
+        var content = lines.join('\n');
+        var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        var now = new Date();
+        var dateStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        a.href = url;
+        a.download = 'mailpilot_' + dateStr + '_' + accounts.length + '.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(t('exportBtn') + ': ' + accounts.length + ' ' + t('items'));
+    }
 
     // 批量复制
     window.openCopyModal = function () {
