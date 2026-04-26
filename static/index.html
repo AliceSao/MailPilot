@@ -18,10 +18,15 @@
 
     <div class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-icon">
-                <i class="fas fa-envelope-open-text"></i>
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;">
+                <div class="logo-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h2 data-i18n="title" style="margin:0;">邮箱系统</h2>
+                <div class="theme-toggle" onclick="toggleLanguage()" title="言語/语言" style="cursor:pointer;width:24px;height:24px;font-size:11px;">
+                    <i class="fas fa-language"></i>
+                </div>
             </div>
-            <h2 data-i18n="title">邮箱系统</h2>
             <div class="current-time" id="current-time"></div>
         </div>
         <div class="sidebar-menu">
@@ -88,10 +93,7 @@
             </div>
         </div>
         <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;padding:12px;">
-            <div class="theme-toggle" onclick="toggleLanguage()" title="言語/语言" style="cursor:pointer;">
-                <i class="fas fa-language"></i>
-            </div>
-            <div style="text-align:center;">
+            <div style="text-align:center;flex:1;">
                 <div class="account-label" data-i18n="totalAccounts" style="font-size:10px;margin-bottom:2px;">账号总数</div>
                 <div class="account-info" style="display:flex;align-items:center;justify-content:center;gap:4px;">
                     <i class="fas fa-users" style="font-size:14px;"></i>

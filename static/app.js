@@ -335,6 +335,10 @@
     var currentMailbox = 'INBOX';
     var filteredData = null;
 
+    // 邮件缓存：{email: {INBOX: {data:[], time:timestamp}, Junk: {...}}}
+    var _mailCache = {};
+    var MAIL_CACHE_TTL = 5 * 60 * 1000; // 5分钟缓存
+
     // 显示/隐藏 Loading
     function showLoading() {
         var overlay = document.getElementById('loading-overlay');
@@ -815,7 +819,7 @@
                     clientId: item.clientId,
                     refreshToken: item.refreshToken,
                     group: '\u672a\u5206\u7ec4',
-                    tokenRenewedAt: new Date().toISOString()
+                    tokenRenewedAt: ''
                 });
                 importCount++;
             }
@@ -826,25 +830,36 @@
         loadData();
         closeImportModal();
 
-        // Auto-renew all imported accounts
-        var newAccounts = pendingEmails.filter(function(p) {
-            return !existsBefore[p.email];
-        });
-        if (newAccounts.length > 0) {
-            var newEmails = newAccounts.map(function(a) { return a.email; });
-            batchRenewEmails(newEmails);
-            return;
-        }
-
-        var message = '\u6210\u529f\u5bfc\u5165 ' + importCount + ' \u6761\u6570\u636e\uff01';
+        var message = t('importSuccess') + ' ' + importCount + ' ' + t('items') + '\uff01';
         if (importCount < pendingEmails.length) {
-            message += '<br><br><span style="color:#f39c12">' + (pendingEmails.length - importCount) + ' \u4e2a\u90ae\u7bb1\u5df2\u5b58\u5728\uff0c\u5df2\u8df3\u8fc7</span>';
+            message += '<br><br><span style="color:#f39c12">' + (pendingEmails.length - importCount) + ' ' + t('emailExists') + '</span>';
         }
-        showModal('\u5bfc\u5165\u5b8c\u6210', message);
+        showModal(t('importComplete'), message);
 
-        // 导入后自动检测令牌状态
+        // 导入流程：先检测 → 检测完后自动续期 → 续期完后设置有效期
         if (importCount > 0) {
-            refreshAllStatus();
+            var newEmails = pendingEmails.filter(function(p) { return !existsBefore[p.email]; }).map(function(a) { return a.email; });
+            // 先检测全部
+            showToast(t('statusChecking') + '...');
+            var checkIdx = 0;
+            function checkNext() {
+                if (checkIdx >= newEmails.length) {
+                    // 检测完成，开始续期
+                    if (newEmails.length > 0) {
+                        batchRenewEmails(newEmails);
+                    }
+                    return;
+                }
+                var em = newEmails[checkIdx];
+                var d = JSON.parse(localStorage.getItem('emailData')) || [];
+                var item = d.find(function(x) { return x.email === em; });
+                if (item && item.clientId && item.refreshToken) {
+                    checkTokenStatus(item, 0);
+                }
+                checkIdx++;
+                setTimeout(checkNext, 300);
+            }
+            checkNext();
         }
     }
 
@@ -897,11 +912,28 @@
     };
 
     window.refreshMails = function () {
+        // 强制刷新：清除当前邮箱+文件夹的缓存
+        if (currentEmailData) {
+            var key = currentEmailData.email;
+            if (_mailCache[key]) delete _mailCache[key][currentMailbox];
+        }
         loadMailList();
     };
 
-    function loadMailList() {
+    function loadMailList(forceRefresh) {
         if (!currentEmailData) return;
+        var cacheKey = currentEmailData.email;
+        
+        // 检查缓存
+        if (!forceRefresh && _mailCache[cacheKey] && _mailCache[cacheKey][currentMailbox]) {
+            var cached = _mailCache[cacheKey][currentMailbox];
+            if (Date.now() - cached.time < MAIL_CACHE_TTL) {
+                mailData = cached.data;
+                renderMailListPanel(cached.data);
+                return;
+            }
+        }
+        
         showLoading();
 
         var apiUrl = '/api/mail-all?refresh_token=' + encodeURIComponent(currentEmailData.refreshToken) + '&client_id=' + encodeURIComponent(currentEmailData.clientId) + '&email=' + encodeURIComponent(currentEmailData.email) + '&mailbox=' + encodeURIComponent(currentMailbox) + '&response_type=json&password=';
@@ -929,6 +961,9 @@
             .then(function (data) {
                 if (data) {
                     mailData = data;
+                    // 写入缓存
+                    if (!_mailCache[cacheKey]) _mailCache[cacheKey] = {};
+                    _mailCache[cacheKey][currentMailbox] = { data: data, time: Date.now() };
                     renderMailListPanel(data);
                 }
             })
