@@ -496,6 +496,13 @@ async def index():
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
 
+# ---------------------------------------------------------------------------
+# Include public API router (MUST be before static mount)
+# ---------------------------------------------------------------------------
+
+from api import router as api_router
+app.include_router(api_router, prefix="/api")
+
 app.mount("/", StaticFiles(directory=STATIC_DIR), name="static")
 
 

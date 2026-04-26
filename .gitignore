@@ -6,8 +6,9 @@ tmp.*
 *.csv
 .kilo/
 
-# Reference source (local only)
+# Reference & docs (local only)
 reference/
+docs/
 
 # Python
 __pycache__/

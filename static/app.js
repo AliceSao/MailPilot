@@ -61,6 +61,7 @@
             passwordAuth: '密码验证失败，请检查密码设置。', loadMailFail: '无法加载邮件，请稍后重试。',
             clientIdSetting: '客户端ID设置', clientIdPlaceholder: '输入默认Client ID...',
             saveSetting: '保存', settingSaved: '设置已保存',
+            operateSelected: '操作选中', operateAll: '操作全部',
         },
         ja: {
             title: 'メールシステム', emailMgmt: 'メール管理', groupMgmt: 'グループ管理',
@@ -110,6 +111,7 @@
             passwordAuth: '認証失敗。パスワードを確認してください。', loadMailFail: 'メール読込失敗。後で再試行してください。',
             clientIdSetting: 'クライアントID設定', clientIdPlaceholder: 'デフォルトClient ID入力...',
             saveSetting: '保存', settingSaved: '設定を保存しました',
+            operateSelected: '選択を操作', operateAll: '全てを操作',
         }
     };
     
@@ -135,6 +137,64 @@
         localStorage.setItem('lang', LANG);
         applyLanguage();
     };
+
+    // ===== 批量操作通用选择器 =====
+    function batchActionPrompt(actionName, selectedEmails, callback) {
+        var allData = JSON.parse(localStorage.getItem('emailData')) || [];
+        var totalCount = allData.length;
+        var selectedCount = selectedEmails.length;
+        
+        if (selectedCount === 0 && totalCount === 0) {
+            showModal(t('ok'), t('noDataRefresh'));
+            return;
+        }
+        
+        // Create custom modal overlay
+        var overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:99998;display:flex;align-items:center;justify-content:center;';
+        
+        var box = document.createElement('div');
+        box.style.cssText = 'background:#fff;border-radius:12px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.2);';
+        if (document.body.classList.contains('dark-theme') || document.body.classList.contains('theme-starry') || document.body.classList.contains('theme-dusk')) {
+            box.style.background = '#1e2a3a';
+            box.style.color = '#e0e0e0';
+        }
+        
+        box.innerHTML = '<h3 style="margin:0 0 16px;font-size:16px;">' + actionName + '</h3>' +
+            '<div style="display:flex;flex-direction:column;gap:10px;">' +
+            (selectedCount > 0 ? '<button id="ba-selected" style="padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,#3498db,#5dade2);color:#fff;font-size:14px;cursor:pointer;">' + t('exportSelected') + ' (' + selectedCount + ')</button>' : '') +
+            '<button id="ba-all" style="padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,#e67e22,#f39c12);color:#fff;font-size:14px;cursor:pointer;">' + t('exportAll') + ' (' + totalCount + ')</button>' +
+            '<button id="ba-cancel" style="padding:12px;border:none;border-radius:8px;background:#95a5a6;color:#fff;font-size:14px;cursor:pointer;">' + t('cancel') + '</button>' +
+            '</div>';
+        
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+        
+        // Click outside = cancel
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) { document.body.removeChild(overlay); }
+        });
+        
+        if (selectedCount > 0) {
+            box.querySelector('#ba-selected').addEventListener('click', function() {
+                document.body.removeChild(overlay);
+                callback(selectedEmails);
+            });
+        }
+        box.querySelector('#ba-all').addEventListener('click', function() {
+            document.body.removeChild(overlay);
+            var all = allData.map(function(a) { return a.email; });
+            callback(all);
+        });
+        box.querySelector('#ba-cancel').addEventListener('click', function() {
+            document.body.removeChild(overlay);
+        });
+    }
+    
+    function getSelectedEmails() {
+        var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
+        return Array.from(checkboxes).map(function(cb) { return cb.dataset.email; });
+    }
 
     // ===== Token Expiry Helpers =====
     var TOKEN_LIFETIME_DAYS = 90;
@@ -204,16 +264,12 @@
     }
     window.renewTokenForEmail = renewTokenForEmail;
 
-    // 批量续期：逐个调用 renewTokenForEmail（已验证可用），用 XMLHttpRequest 同步风格避免 Promise 链问题
+    // 批量续期：通过 batchActionPrompt 选择范围
     window.batchRenewSelected = function() {
-        var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
-        if (checkboxes.length === 0) {
-            showModal(t('ok'), t('selectEmailFirst'));
-            return;
-        }
-        var selectedEmails = Array.from(checkboxes).map(function(cb) { return cb.dataset.email; });
-        if (!confirm(t('batchRenewConfirm1') + selectedEmails.length + t('batchRenewConfirm2'))) return;
-        batchRenewEmails(selectedEmails);
+        batchActionPrompt(t('batchRenew'), getSelectedEmails(), function(emails) {
+            if (!confirm(t('batchRenewConfirm1') + emails.length + t('batchRenewConfirm2'))) return;
+            batchRenewEmails(emails);
+        });
     };
 
     function batchRenewEmails(emailList) {
@@ -289,24 +345,20 @@
         checkTokenStatus(item, 0);
     };
 
-    // 批量检测（仅选中的）
+    // 批量检测：通过 batchActionPrompt 选择范围
     window.batchCheckSelected = function() {
-        var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
-        if (checkboxes.length === 0) {
-            showModal(t('ok'), t('selectEmailFirst'));
-            return;
-        }
-        var selectedEmails = Array.from(checkboxes).map(function(cb) { return cb.dataset.email; });
-        var data = JSON.parse(localStorage.getItem('emailData')) || [];
-        var count = 0;
-        selectedEmails.forEach(function(email, i) {
-            var item = data.find(function(d) { return d.email === email; });
-            if (item && !_checkingEmails[email]) {
-                setTimeout(function() { checkTokenStatus(item, 0); }, i * 300);
-                count++;
-            }
+        batchActionPrompt(t('batchCheck'), getSelectedEmails(), function(emails) {
+            var data = JSON.parse(localStorage.getItem('emailData')) || [];
+            var count = 0;
+            emails.forEach(function(email, i) {
+                var item = data.find(function(d) { return d.email === email; });
+                if (item && !_checkingEmails[email]) {
+                    setTimeout(function() { checkTokenStatus(item, 0); }, i * 300);
+                    count++;
+                }
+            });
+            showToast(t('statusChecking') + ' ' + count + ' ' + t('accounts'));
         });
-        showToast(t('statusChecking') + ' ' + count + ' ' + t('accounts'));
     };
 
     function checkExpiryWarnings() {
@@ -959,23 +1011,17 @@
         loadData();
     };
 
-    // 批量删除
+    // 批量删除：通过 batchActionPrompt 选择范围
     window.batchDelete = function () {
-        var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
-        if (checkboxes.length === 0) {
-            showModal(t('ok'), t('selectEmailFirst'));
-            return;
-        }
-
-        if (!confirm(t('batchDeleteConfirm1') + ' ' + checkboxes.length + ' ' + t('batchDeleteConfirm2'))) return;
-
-        var selectedEmails = Array.from(checkboxes).map(function (cb) { return cb.dataset.email; });
-        var data = JSON.parse(localStorage.getItem('emailData')) || [];
-        var newData = data.filter(function (item) { return !selectedEmails.includes(item.email); });
-        localStorage.setItem('emailData', JSON.stringify(newData));
-        syncToBackend();
-        loadData();
-        showModal(t('deleteSuccess'), t('deletedCount') + ' ' + checkboxes.length);
+        batchActionPrompt(t('batchDelete'), getSelectedEmails(), function(emails) {
+            if (!confirm(t('batchDeleteConfirm1') + emails.length + t('batchDeleteConfirm2'))) return;
+            var data = JSON.parse(localStorage.getItem('emailData')) || [];
+            var newData = data.filter(function(item) { return !emails.includes(item.email); });
+            localStorage.setItem('emailData', JSON.stringify(newData));
+            syncToBackend();
+            loadData();
+            showModal(t('deleteSuccess'), t('deletedCount') + ' ' + emails.length);
+        });
     };
 
     // 查看邮件
@@ -1113,34 +1159,17 @@
         mailData = [];
     };
 
-    // 导出备份 (使用后端 API)
+    // 导出备份：通过 batchActionPrompt 选择范围
     window.exportBackup = function () {
-        var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
-        
-        if (checkboxes.length > 0) {
-            // 有选中项——让用户选择
-            var allData = JSON.parse(localStorage.getItem('emailData')) || [];
-            var totalCount = allData.length;
-            
-            var choice = confirm(
-                t('exportBtn') + '\n\n' +
-                '1. OK = ' + t('exportSelected') + ' (' + checkboxes.length + ')\n' +
-                '2. ' + t('cancel') + ' = ' + t('exportAll') + ' (' + totalCount + ')'
-            );
-            
-            if (choice) {
-                // 导出选中的
-                var selectedEmails = Array.from(checkboxes).map(function(cb) { return cb.dataset.email; });
-                var selectedData = allData.filter(function(item) { return selectedEmails.includes(item.email); });
-                downloadAsFile(selectedData);
-            } else {
-                // 导出全部
+        batchActionPrompt(t('exportBtn'), getSelectedEmails(), function(emails) {
+            if (emails.length === (JSON.parse(localStorage.getItem('emailData')) || []).length) {
                 window.location.href = '/api/export';
+            } else {
+                var allData = JSON.parse(localStorage.getItem('emailData')) || [];
+                var selected = allData.filter(function(a) { return emails.includes(a.email); });
+                downloadAsFile(selected);
             }
-        } else {
-            // 没有选中——直接导出全部
-            window.location.href = '/api/export';
-        }
+        });
     };
     
     function downloadAsFile(accounts) {
@@ -1162,14 +1191,13 @@
         showToast(t('exportBtn') + ': ' + accounts.length + ' ' + t('items'));
     }
 
-    // 批量复制
+    // 批量复制：通过 batchActionPrompt 选择范围
     window.openCopyModal = function () {
-        var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
-        if (checkboxes.length === 0) {
-            showModal(t('ok'), t('selectEmailFirst'));
-            return;
-        }
-        document.getElementById('copy-modal').style.display = 'flex';
+        batchActionPrompt(t('batchCopy'), getSelectedEmails(), function(emails) {
+            // Store selected for copy modal
+            window._copyEmails = emails;
+            document.getElementById('copy-modal').style.display = 'flex';
+        });
     };
 
     window.closeCopyModal = function () {
@@ -1177,8 +1205,7 @@
     };
 
     window.batchCopy = function (type) {
-        var checkboxes = document.querySelectorAll('#email-table tbody input[type="checkbox"]:checked');
-        var selectedEmails = Array.from(checkboxes).map(function (cb) { return cb.dataset.email; });
+        var selectedEmails = window._copyEmails || [];
         var data = JSON.parse(localStorage.getItem('emailData')) || [];
         var selectedData = data.filter(function (item) { return selectedEmails.includes(item.email); });
 
