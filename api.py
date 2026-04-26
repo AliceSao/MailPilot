@@ -76,7 +76,7 @@ async def batch_renew(request: Request):
         emails = set(body.get("emails", []))
         targets = [a for a in accounts if a["email"] in emails and a.get("refreshToken")]
 
-    from datetime import datetime
+    from datetime import datetime, timezone
     results = []
 
     for a in targets:
@@ -91,7 +91,7 @@ async def batch_renew(request: Request):
                 data = resp.json()
                 new_rt = data.get("refresh_token", "")
                 if new_rt:
-                    now_iso = datetime.utcnow().isoformat() + "Z"
+                    now_iso = datetime.now(timezone.utc).isoformat()
                     for acc in accounts:
                         if acc["email"] == a["email"]:
                             acc["refreshToken"] = new_rt

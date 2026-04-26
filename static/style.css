@@ -651,15 +651,7 @@
             font-size: 14px;
         }
 
-        .toolbar-btn.btn-compact {
-            padding: 8px 12px;
-            font-size: 12px;
-            gap: 5px;
-        }
-
-        .toolbar-btn.btn-compact i {
-            font-size: 12px;
-        }
+        /* btn-compact removed — all toolbar buttons use uniform sizing */
 
         .btn-primary {
             background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
@@ -811,6 +803,26 @@
         .email-table .actions button.view:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .email-table .actions button.renew {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: #ffffff;
+        }
+
+        .email-table .actions button.renew:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+        }
+
+        .email-table .actions button.check {
+            background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+            color: #ffffff;
+        }
+
+        .email-table .actions button.check:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
         }
 
         .email-table .actions button.delete {
@@ -2102,6 +2114,7 @@
                 position: relative;
             }
             .email-table tbody tr:hover { background: #f0f7ff; }
+            .email-table tbody tr:has(input[type="checkbox"]:checked) { border-color: #3498db; background: #e8f4fc; }
 
             /* checkbox — 右上角 */
             .email-table tbody td:nth-child(1) {
@@ -2183,9 +2196,9 @@
             .mail-view-tabs .mail-view-tab { font-size: 12px; padding: 8px 14px; }
             .mail-view-body { flex-direction: column; }
             .mail-list-panel {
-                width: 100% !important; max-height: 35vh;
+                width: 100% !important; max-height: 25vh;
                 border-right: none !important; border-bottom: 1px solid #e8f0fe;
-                overflow-y: auto;
+                overflow-y: auto; flex-shrink: 0;
             }
             .mail-list-item { padding: 10px; }
             .mail-sender { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -2206,8 +2219,10 @@
             .add-group-form button { width: 100%; padding: 10px; }
 
             /* 防止底部导航栏遮挡 */
-            .content { padding-bottom: 80px; }
-            .pagination-section { margin-bottom: 60px; }
+            .content { padding-bottom: 120px; }
+            .pagination-section { margin-bottom: 80px; }
+            .mail-view-content { padding-bottom: env(safe-area-inset-bottom, 60px); }
+            .mail-content-panel { padding-bottom: 80px !important; }
         }
 
         @media (max-width: 400px) {

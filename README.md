@@ -5,13 +5,15 @@ Outlook 邮箱批量管理系统 / Outlookメール一括管理システム
 ## 功能一览
 
 **账户管理** — 导入/导出/删除/搜索/分组/分页  
-**令牌检测** — Graph API + IMAP 双通道自动检测  
-**令牌续期** — 手动续期（单个/批量），倒数3天自动续期  
-**邮件查看** — 收件箱/垃圾箱，5分钟缓存  
+**令牌检测** — Graph API + IMAP 双通道（单个/批量/全量）  
+**令牌续期** — 手动续期（单个/批量），无自动续期  
+**邮件查看** — 收件箱/垃圾箱，5分钟缓存，iframe 安全渲染  
 **验证码提取** — API 自动从邮件中提取数字验证码  
+**批量操作** — 统一选择弹窗（选中/全部/取消）  
 **多语言** — 中文 / 日本語  
 **多主题** — 亮色 / 暗色 / 星空 / 黄昏  
-**多平台** — Windows / Android / Python 源码
+**多平台** — Windows / Android / Python 源码  
+**安全** — 邮件 XSS 防护，数据自动备份，127.0.0.1 绑定
 
 ## 快速开始
 
@@ -39,13 +41,13 @@ python app.py
 ## 项目结构
 
 ```
-app.py              后端主服务（FastAPI）
+app.py              后端主服务（FastAPI，内部API）
 api.py              对外开放 API（批量操作/验证码提取）
 requirements.txt    依赖
 static/
   index.html        页面
-  style.css         样式
-  app.js            前端逻辑
+  style.css         样式（含移动端卡片布局 + 4套主题）
+  app.js            前端逻辑（i18n + 批量操作 + 邮件缓存）
 android/            Android 项目源码
 dist/
   windows/          MailPilot.exe
@@ -60,8 +62,18 @@ dist/
 
 - Microsoft refresh_token 有效期 90 天
 - 每次续期获得新 token（新 90 天），旧 token 立即失效
-- 系统不自动续期（除首次导入和倒数3天），其余需用户手动操作
+- **系统不自动续期**，所有续期操作由用户手动触发
+- 未手动续期的邮箱，有效期显示"未知"
 - 支持两种 scope：Graph API (Mail.ReadWrite) 和 IMAP (IMAP.AccessAsUser.All)
+- 到期前 ≤10 天自动弹出预警提示
+
+## 安全特性
+
+- 邮件 HTML 通过 iframe sandbox 隔离渲染（防 XSS）
+- POST /api/accounts 写入前自动备份 accounts.json.bak
+- 默认绑定 127.0.0.1（不暴露到局域网）
+- syncToBackend 100ms 节流（防止批量操作频繁写入）
+- POST 接口有 list 类型校验
 
 ## 使用教程
 

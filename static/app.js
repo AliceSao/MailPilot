@@ -162,8 +162,8 @@
         
         box.innerHTML = '<h3 style="margin:0 0 16px;font-size:16px;">' + actionName + '</h3>' +
             '<div style="display:flex;flex-direction:column;gap:10px;">' +
-            (selectedCount > 0 ? '<button id="ba-selected" style="padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,#3498db,#5dade2);color:#fff;font-size:14px;cursor:pointer;">' + t('exportSelected') + ' (' + selectedCount + ')</button>' : '') +
-            '<button id="ba-all" style="padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,#e67e22,#f39c12);color:#fff;font-size:14px;cursor:pointer;">' + t('exportAll') + ' (' + totalCount + ')</button>' +
+            (selectedCount > 0 ? '<button id="ba-selected" style="padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,#3498db,#5dade2);color:#fff;font-size:14px;cursor:pointer;">' + actionName + ' ' + t('operateSelected') + ' (' + selectedCount + ')</button>' : '') +
+            '<button id="ba-all" style="padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,#e67e22,#f39c12);color:#fff;font-size:14px;cursor:pointer;">' + actionName + ' ' + t('operateAll') + ' (' + totalCount + ')</button>' +
             '<button id="ba-cancel" style="padding:12px;border:none;border-radius:8px;background:#95a5a6;color:#fff;font-size:14px;cursor:pointer;">' + t('cancel') + '</button>' +
             '</div>';
         
@@ -364,24 +364,14 @@
     function checkExpiryWarnings() {
         var data = JSON.parse(localStorage.getItem('emailData')) || [];
         var warnings = [];
-        var autoRenewEmails = [];
         data.forEach(function(item) {
             var days = getDaysRemaining(item.tokenRenewedAt);
             if (days >= 0 && days <= 10) {
                 warnings.push(item.email + ' (' + days + t('daysLeft') + ')');
             }
-            // 倒数三天内且有 token 的自动续期
-            if (days >= 0 && days <= 3 && item.refreshToken && item.clientId) {
-                autoRenewEmails.push(item.email);
-            }
         });
         if (warnings.length > 0) {
             showToast('\u26a0 ' + warnings.length + ' ' + t('expiryWarning'));
-        }
-        // 自动续期倒数三天内的
-        if (autoRenewEmails.length > 0) {
-            showToast(t('batchRenewStart') + ' ' + autoRenewEmails.length + ' ' + t('accounts'));
-            batchRenewEmails(autoRenewEmails);
         }
     }
 
@@ -495,18 +485,20 @@
                 })() + '</td>' +
                 '<td class="actions">' +
                 '<button class="view" onclick="viewMails(' + globalIndex + ')"><i class="fas fa-eye"></i> ' + t('viewBtn') + '</button>' +
-                '<button onclick="renewTokenForEmail(\'' + item.email.replace(/'/g, "\\'") + '\')" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;margin:0 2px;" title="' + t('renewBtn') + '"><i class="fas fa-sync-alt"></i></button>' +
-                '<button onclick="checkOneEmail(\'' + item.email.replace(/'/g, "\\'") + '\')" style="background:linear-gradient(135deg,#3498db,#5dade2);color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;margin:0 2px;" title="' + t('checkBtn') + '"><i class="fas fa-search"></i></button>' +
+                '<button class="renew" onclick="renewTokenForEmail(\'' + item.email.replace(/'/g, "\\'") + '\')" title="' + t('renewBtn') + '"><i class="fas fa-sync-alt"></i></button>' +
+                '<button class="check" onclick="checkOneEmail(\'' + item.email.replace(/'/g, "\\'") + '\')" title="' + t('checkBtn') + '"><i class="fas fa-search"></i></button>' +
                 '<button class="delete" onclick="deleteEmail(' + globalIndex + ')"><i class="fas fa-trash"></i></button>' +
                 '</td>';
+            // 移动端：点击卡片任意处切换选中
+            row.addEventListener('click', function(e) {
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'I' || e.target.tagName === 'INPUT') return;
+                var cb = row.querySelector('input[type="checkbox"]');
+                if (cb) cb.checked = !cb.checked;
+            });
             emailTableBody.appendChild(row);
         });
 
-        pageData.forEach(function (item, index) {
-            if (!item.tokenStatus || item.tokenStatus === 'checking') {
-                checkTokenStatus(item, index);
-            }
-        });
+        // 不自动检测——检测由用户手动触发（防止API调用洪水）
     }
 
     // 检测令牌状态 (带去重守卫)
@@ -744,9 +736,9 @@
     window.changeItemsPerPage = function (value) {
         itemsPerPage = parseInt(value, 10);
         currentPage = 1;
-        var data = JSON.parse(localStorage.getItem('emailData')) || [];
+        var data = filteredData || JSON.parse(localStorage.getItem('emailData')) || [];
         renderTable(data);
-        renderPagination((filteredData || data).length);
+        renderPagination(data.length);
     };
 
     window.jumpToPage = function () {
@@ -907,35 +899,34 @@
         }
         showModal(t('importComplete'), message);
 
-        // 导入流程：逐个 检测→续期→下一个
+        // 导入后只检测，不自动续期（续期是破坏性操作，由用户手动触发）
         if (importCount > 0) {
             var newEmails = pendingEmails.filter(function(p) { return !existsBefore[p.email]; }).map(function(a) { return a.email; });
-            showToast(t('importComplete') + ' - ' + t('statusChecking') + '...');
-            var procIdx = 0;
-            var procSuccess = 0;
-            var procFail = 0;
+            showToast(t('statusChecking') + '...');
+            var checkIdx = 0;
+            var validCount = 0;
             
-            function processNext() {
-                if (procIdx >= newEmails.length) {
+            function checkNext() {
+                if (checkIdx >= newEmails.length) {
                     syncToBackend();
                     loadData();
-                    showToast(t('importComplete') + ': ' + newEmails.length + ' ' + t('items') + ' (' + t('successCount') + ' ' + procSuccess + ')');
+                    showModal(t('importComplete'),
+                        t('importSuccess') + ' ' + importCount + ' ' + t('items') +
+                        '<br>' + t('statusValid') + ': ' + validCount +
+                        '<br><br><strong style="color:#e67e22">' + t('backupReminder').replace(t('exportBtn'), t('batchRenew')) + '</strong>');
                     return;
                 }
-                var em = newEmails[procIdx];
+                var em = newEmails[checkIdx];
                 var d = JSON.parse(localStorage.getItem('emailData')) || [];
                 var item = d.find(function(x) { return x.email === em; });
                 
                 if (!item || !item.clientId || !item.refreshToken) {
-                    procFail++;
-                    procIdx++;
-                    setTimeout(processNext, 100);
+                    checkIdx++;
+                    setTimeout(checkNext, 50);
                     return;
                 }
                 
-                // Step 1: Check token via /api/mail-all
                 var checkUrl = '/api/mail-all?refresh_token=' + encodeURIComponent(item.refreshToken) + '&client_id=' + encodeURIComponent(item.clientId) + '&email=' + encodeURIComponent(item.email) + '&mailbox=INBOX&response_type=json&password=';
-                
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', checkUrl, true);
                 xhr.timeout = 30000;
@@ -946,58 +937,21 @@
                         if (xhr.status === 200 || xhr.status === 500) {
                             dd[idx].tokenStatus = 'valid';
                             dd[idx].permissionType = 'O2';
+                            validCount++;
                         } else {
                             dd[idx].tokenStatus = 'invalid';
                             dd[idx].permissionType = t('statusInvalid');
                         }
                         localStorage.setItem('emailData', JSON.stringify(dd));
-                        updateStats();
                     }
-                    
-                    // Step 2: Renew token
-                    if (xhr.status === 200 || xhr.status === 500) {
-                        var renewXhr = new XMLHttpRequest();
-                        renewXhr.open('POST', '/api/renew-token', true);
-                        renewXhr.setRequestHeader('Content-Type', 'application/json');
-                        renewXhr.timeout = 30000;
-                        renewXhr.onload = function() {
-                            try {
-                                if (renewXhr.status === 200) {
-                                    var j = JSON.parse(renewXhr.responseText);
-                                    if (j.success) {
-                                        var ddd = JSON.parse(localStorage.getItem('emailData')) || [];
-                                        var ri = ddd.findIndex(function(x) { return x.email === em; });
-                                        if (ri !== -1) {
-                                            ddd[ri].refreshToken = j.newRefreshToken;
-                                            ddd[ri].tokenRenewedAt = j.tokenRenewedAt;
-                                            localStorage.setItem('emailData', JSON.stringify(ddd));
-                                            syncToBackend();
-                                            updateTableRow(em, ddd[ri]);
-                                        }
-                                        procSuccess++;
-                                    } else { procFail++; }
-                                } else { procFail++; }
-                            } catch(e) { procFail++; }
-                            procIdx++;
-                            setTimeout(processNext, 200);
-                        };
-                        renewXhr.onerror = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
-                        renewXhr.ontimeout = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
-                        // 从 localStorage 读最新 token（检测可能已更新）
-                        var freshD = JSON.parse(localStorage.getItem('emailData')) || [];
-                        var freshItem = freshD.find(function(x) { return x.email === em; });
-                        renewXhr.send(JSON.stringify({ email: em, clientId: freshItem ? freshItem.clientId : item.clientId, refreshToken: freshItem ? freshItem.refreshToken : item.refreshToken }));
-                    } else {
-                        procFail++;
-                        procIdx++;
-                        setTimeout(processNext, 200);
-                    }
+                    checkIdx++;
+                    setTimeout(checkNext, 300);
                 };
-                xhr.onerror = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
-                xhr.ontimeout = function() { procFail++; procIdx++; setTimeout(processNext, 200); };
+                xhr.onerror = function() { checkIdx++; setTimeout(checkNext, 200); };
+                xhr.ontimeout = function() { checkIdx++; setTimeout(checkNext, 200); };
                 xhr.send();
             }
-            processNext();
+            checkNext();
         }
     }
 
@@ -1149,7 +1103,7 @@
             '<span><i class="fas fa-calendar"></i> ' + item.date + '</span>' +
             '</div></div>' +
             '<div class="mail-content-body">' +
-            '<div class="mail-text">' + (item.html || item.text || t('noData')) + '</div>' +
+            '<div class="mail-text">' + (item.html ? '<iframe sandbox style="width:100%;min-height:300px;border:none;" srcdoc="' + item.html.replace(/"/g, '&quot;') + '"></iframe>' : (item.text || t('noData')).replace(/</g, '&lt;').replace(/>/g, '&gt;')) + '</div>' +
             '</div>';
     };
 
@@ -1776,13 +1730,17 @@
     // ========================================
 
     // Sync data to backend for persistence
+    var _syncTimer = null;
     function syncToBackend() {
-        var data = JSON.parse(localStorage.getItem('emailData')) || [];
-        fetch('/api/accounts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).catch(function (e) { console.warn('Backend sync failed:', e); });
+        clearTimeout(_syncTimer);
+        _syncTimer = setTimeout(function() {
+            var data = JSON.parse(localStorage.getItem('emailData')) || [];
+            fetch('/api/accounts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).catch(function (e) { console.warn('Backend sync failed:', e); });
+        }, 100);
     }
 
     function syncGroupsToBackend() {

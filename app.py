@@ -10,7 +10,8 @@ import os
 import sys
 import threading
 import webbrowser
-from datetime import date
+from contextlib import asynccontextmanager
+from datetime import date, datetime, timezone
 
 # PyInstaller 打包后 static/ 在临时解压目录中
 if getattr(sys, 'frozen', False):
@@ -29,7 +30,13 @@ from fastapi.staticfiles import StaticFiles
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Outlook Manager")
+@asynccontextmanager
+async def lifespan(app_instance):
+    _ensure_output_dir()
+    logger.info("Output directory ready: %s", os.path.abspath(OUTPUT_DIR))
+    yield
+
+app = FastAPI(title="Outlook Manager", lifespan=lifespan)
 
 OAUTH2_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
 GRAPH_MESSAGES_URL = "https://graph.microsoft.com/v1.0/me/mailFolders/{folder}/messages"
@@ -64,12 +71,14 @@ def _write_json(path: str, data: list) -> None:
 
 
 def _write_csv(accounts: list) -> None:
+    import csv
     _ensure_output_dir()
-    cols = ["email", "password", "clientId", "refreshToken", "group", "tokenStatus", "permissionType"]
-    with open(CSV_PATH, "w", encoding="utf-8-sig") as f:
-        f.write(",".join(cols) + "\n")
+    cols = ["email", "password", "clientId", "refreshToken", "group", "tokenStatus", "permissionType", "tokenRenewedAt"]
+    with open(CSV_PATH, "w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=cols, extrasaction='ignore')
+        writer.writeheader()
         for a in accounts:
-            f.write(",".join(str(a.get(c, "")) for c in cols) + "\n")
+            writer.writerow(a)
 
 
 async def _read_accounts() -> list:
@@ -355,18 +364,18 @@ async def renew_token(request: Request):
 
     # Verify the new token actually works (read 1 mail)
     try:
-        test_resp = await httpx.AsyncClient(timeout=15).get(
-            "https://graph.microsoft.com/v1.0/me/mailFolders/Inbox/messages",
-            params={"$top": "1", "$select": "subject"},
-            headers={"Authorization": f"Bearer {new_at}"},
-        )
-        mail_ok = test_resp.status_code == 200
+        async with httpx.AsyncClient(timeout=15) as test_client:
+            test_resp = await test_client.get(
+                "https://graph.microsoft.com/v1.0/me/mailFolders/Inbox/messages",
+                params={"$top": "1", "$select": "subject"},
+                headers={"Authorization": f"Bearer {new_at}"},
+            )
+            mail_ok = test_resp.status_code == 200
     except Exception:
         mail_ok = False
 
     # Update accounts.json
-    from datetime import datetime
-    now_iso = datetime.utcnow().isoformat() + "Z"
+    now_iso = datetime.now(timezone.utc).isoformat()
 
     async with _accounts_lock:
         accounts = await asyncio.to_thread(_read_json, ACCOUNTS_PATH)
@@ -400,6 +409,13 @@ async def get_accounts():
 @app.post("/api/accounts")
 async def post_accounts(request: Request):
     accounts = await request.json()
+    if not isinstance(accounts, list):
+        return JSONResponse(status_code=400, content={"error": "expected list"})
+    # Auto-backup before overwrite
+    if os.path.exists(ACCOUNTS_PATH):
+        import shutil
+        bak_path = ACCOUNTS_PATH + ".bak"
+        await asyncio.to_thread(shutil.copy2, ACCOUNTS_PATH, bak_path)
     await _save_accounts(accounts)
     return JSONResponse(content={"ok": True})
 
@@ -416,6 +432,8 @@ async def get_groups():
 @app.post("/api/groups")
 async def post_groups(request: Request):
     groups = await request.json()
+    if not isinstance(groups, list):
+        return JSONResponse(status_code=400, content={"error": "expected list"})
     await _save_groups(groups)
     return JSONResponse(content={"ok": True})
 
@@ -510,12 +528,10 @@ app.mount("/", StaticFiles(directory=STATIC_DIR), name="static")
 # Startup
 # ---------------------------------------------------------------------------
 
-@app.on_event("startup")
-async def startup():
-    _ensure_output_dir()
-    logger.info("Output directory ready: %s", os.path.abspath(OUTPUT_DIR))
-
-
 if __name__ == "__main__":
     threading.Timer(1.5, lambda: webbrowser.open("http://127.0.0.1:1375")).start()
-    uvicorn.run(app, host="0.0.0.0", port=1375, log_level="info")
+    try:
+        uvicorn.run(app, host="127.0.0.1", port=1375, log_level="info")
+    except OSError as e:
+        logger.error("Port 1375 is already in use: %s", e)
+        input("Press Enter to exit...")
