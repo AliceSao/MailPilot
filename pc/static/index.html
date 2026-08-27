@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱系统</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mail-view.css">
+    <link rel="stylesheet" href="css/groups.css">
+    <link rel="stylesheet" href="css/modals.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="css/theme-default.css">
+    <link rel="stylesheet" href="css/theme-starry.css">
+    <link rel="stylesheet" href="css/theme-dusk.css">
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body class="js-hide">
+
+    <!-- Loading 效果 -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- ===== 全局顶栏 ===== -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="topbar-btn hamburger-btn" data-action="toggle-sidebar" title="菜单/折叠侧边栏" id="hamburger-btn">
+                <i class="fas fa-bars" id="hamburger-icon"></i>
+            </button>
+            <div class="topbar-logo">
+                <i class="fas fa-envelope-open-text"></i>
+                <span class="topbar-brand" data-i18n="title">邮箱系统</span>
+            </div>
+            <nav class="topbar-breadcrumb">
+                <span class="breadcrumb-item active" data-i18n="emailMgmt" data-action="switch-section" data-target="emails" style="cursor:pointer;">邮箱管理</span>
+            </nav>
+        </div>
+        <div class="topbar-center">
+            <div class="topbar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="topbar-search" placeholder="搜索邮箱地址..." data-i18n-placeholder="search" oninput="searchEmails()">
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-account-count">
+                <i class="fas fa-users"></i>
+                <span id="topbar-account-count">0</span>
+            </div>
+            <button class="topbar-btn" data-action="toggle-language" title="言語/语言">
+                <i class="fas fa-language"></i>
+            </button>
+            <button class="topbar-btn" data-action="cycle-theme" title="切换主题">
+                <i class="fas fa-palette" id="theme-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== 主布局容器 ===== -->
+    <div class="mobile-sidebar-overlay" id="mobile-sidebar-overlay" data-action="toggle-mobile-sidebar"></div>
+    <div class="main-layout">
+
+    <!-- 侧边栏（由parts/sidebar.html动态加载） -->
+    <div id="sidebar-container"></div>
+
+    <!-- 内容区（由parts/content-*.html动态加载） -->
+    <div class="content" id="content-container">
+        <!-- 邮箱管理内容区 -->
+        <div id="emails-container"></div>
+        <!-- 分组管理内容区 -->
+        <div id="groups-container"></div>
+    </div>
+
+    </div><!-- /main-layout -->
+
+    <!-- 模态框集合（由parts/modals.html动态加载） -->
+    <div id="modals-container"></div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/table.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/mail.js"></script>
+    <script src="js/batch.js"></script>
+    <script src="js/mobile.js"></script>
+    <!-- 🔴 关键：所有模块加载完成后才调用initApp()，否则window.loadHTMLParts等函数未定义 -->
+    <script>
+        if (window.initApp) {
+            window.initApp();
+        } else {
+            console.error('[Bootstrap] ❌ window.initApp 未定义！app.js可能未加载');
+        }
+    </script>
+</body>
+
+</html>

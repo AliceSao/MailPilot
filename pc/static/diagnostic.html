@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MailPilot 诊断工具</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 900px; margin: 0 auto; background: #f5f5f5; }
+        .test-item { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .pass { color: #10B981; font-weight: bold; }
+        .fail { color: #EF4444; font-weight: bold; }
+        .warn { color: #F59E0B; font-weight: bold; }
+        pre { background: #1f2937; color: #10B981; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 12px; }
+        button { background: #3B82F6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2563EB; }
+        h1 { color: #1f2937; }
+        h2 { color: #374151; margin-top: 30px; }
+        .summary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔧 MailPilot 诊断工具</h1>
+    <p>此工具用于检测应用初始化问题和DOM元素状态</p>
+
+    <div class="summary" id="summary"></div>
+
+    <h2>📋 DOM元素检查</h2>
+    <div id="dom-tests"></div>
+
+    <h2>⚡ 功能函数测试</h2>
+    <div id="func-tests"></div>
+
+    <h2>🌐 API连接测试</h2>
+    <button onclick="testAPI()">测试后端API</button>
+    <div id="api-result"></div>
+
+    <h2>📝 控制台日志</h2>
+    <pre id="console-log">等待捕获日志...</pre>
+
+    <script>
+        var testResults = { pass: 0, fail: 0, warn: 0 };
+
+        function log(msg) {
+            var el = document.getElementById('console-log');
+            var time = new Date().toLocaleTimeString();
+            el.textContent = '[' + time + '] ' + msg + '\n' + el.textContent;
+        }
+
+        function addTest(containerId, name, status, detail) {
+            var container = document.getElementById(containerId);
+            var div = document.createElement('div');
+            div.className = 'test-item';
+            div.innerHTML = '<strong>' + (status === 'pass' ? '<span class="pass">✅</span>' : status === 'fail' ? '<span class="fail">❌</span>' : '<span class="warn">⚠️</span>') + ' ' + name + '</strong><br>' + (detail || '');
+            container.appendChild(div);
+
+            if (status === 'pass') testResults.pass++;
+            else if (status === 'fail') testResults.fail++;
+            else testResults.warn++;
+
+            updateSummary();
+        }
+
+        function updateSummary() {
+            var total = testResults.pass + testResults.fail + testResults.warn;
+            var percent = total > 0 ? Math.round((testResults.pass / total) * 100) : 0;
+            document.getElementById('summary').innerHTML =
+                '<h2>📊 测试结果总览</h2>' +
+                '<p>通过: <strong style="color:#10B981">' + testResults.pass + '</strong> | ' +
+                '失败: <strong style="color:#EF4444">' + testResults.fail + '</strong> | ' +
+                '警告: <strong style="color:#F59E0B">' + testResults.warn + '</strong></p>' +
+                '<p>完成度: <strong>' + percent + '%</strong> (' + total + '/' + total + ')</p>';
+        }
+
+        // DOM元素检查
+        log('开始DOM元素检查...');
+        var criticalElements = [
+            { id: 'email-table', desc: '邮件表格容器' },
+            { id: 'pagination', desc: '分页组件' },
+            { id: 'account-count', desc: '账户计数（侧边栏）' },
+            { id: 'topbar-account-count', desc: '账户计数（顶栏）' },
+            { id: 'valid-count', desc: '有效账号数' },
+            { id: 'invalid-count', desc: '异常账号数' },
+            { id: 'checking-count', desc: '检测中账号数' },
+            { id: 'unchecked-count', desc: '未检测账号数' },
+            { id: 'no-data', desc: '空数据提示' },
+            { id: 'sidebar-container', desc: '侧边栏容器' },
+            { id: 'emails-container', desc: '邮件内容区' },
+            { id: 'groups-container', desc: '分组内容区' },
+            { id: 'modals-container', desc: '模态框容器' }
+        ];
+
+        criticalElements.forEach(function(item) {
+            var el = document.getElementById(item.id);
+            if (el) {
+                addTest('dom-tests', item.id + ' (' + item.desc + ')', 'pass', '✅ 元素存在，标签: ' + el.tagName);
+                log('✅ 找到元素: ' + item.id);
+            } else {
+                addTest('dom-tests', item.id + ' (' + item.desc + ')', 'warn', '⚠️ 元素不存在（可能是动态加载或已移除）');
+                log('⚠️ 未找到元素: ' + item.id);
+            }
+        });
+
+        // 检查表格tbody
+        var tbody = document.querySelector('#email-table tbody');
+        if (tbody) {
+            addTest('dom-tests', '#email-table tbody', 'pass', '✅ 表格体存在');
+        } else {
+            addTest('dom-tests', '#email-table tbody', 'fail', '❌ 表格体不存在！这会导致renderTable失败');
+            log('❌ 关键错误：#email-table tbody 不存在');
+        }
+
+        // 功能函数测试
+        log('检查全局函数...');
+        var functions = [
+            { name: 'loadData', desc: '数据加载函数' },
+            { name: 'updateAccountCount', desc: '账户计数更新' },
+            { name: 'updateStats', desc: '统计更新' },
+            { name: 'renderTable', desc: '表格渲染' },
+            { name: 'renderPagination', desc: '分页渲染' },
+            { name: 'toggleNoData', desc: '空数据切换' },
+            { name: 'showLoading', desc: 'Loading显示' },
+            { name: 'hideLoading', desc: 'Loading隐藏' },
+            { name: 'apiCall', desc: 'API调用封装' },
+            { name: 'showToast', desc: 'Toast通知' },
+            { name: 'appLog', desc: '日志系统' },
+            { name: 'detectMobile', desc: '移动端检测' }
+        ];
+
+        functions.forEach(function(func) {
+            if (typeof window[func.name] === 'function') {
+                addTest('func-tests', func.name + '()', 'pass', func.desc);
+                log('✅ 函数可用: ' + func.name);
+            } else {
+                addTest('func-tests', func.name + '()', 'fail', func.desc + ' - 函数未定义！');
+                log('❌ 函数缺失: ' + func.name);
+            }
+        });
+
+        // 检查常量定义
+        log('检查全局常量...');
+        if (typeof LOG_LEVELS !== 'undefined') {
+            addTest('func-tests', 'LOG_LEVELS', 'pass', '日志级别常量已定义: ' + JSON.stringify(LOG_LEVELS));
+            log('✅ LOG_LEVELS 已定义');
+        } else {
+            addTest('func-tests', 'LOG_LEVELS', 'warn', '日志级别常量未定义（可能尚未初始化）');
+            log('⚠️ LOG_LEVELS 未定义');
+        }
+
+        // API测试
+        async function testAPI() {
+            var resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = '<p>正在测试...</p>';
+            log('开始API测试...');
+
+            try {
+                var response = await fetch('/api/accounts');
+                if (response.ok) {
+                    var data = await response.json();
+                    resultDiv.innerHTML = '<div class="test-item"><span class="pass">✅ API连接成功</span><br>返回数据: ' + data.length + ' 条记录</div>';
+                    log('✅ API /api/accounts 正常，返回 ' + data.length + ' 条数据');
+
+                    try {
+                        var groupRes = await fetch('/api/groups');
+                        if (groupRes.ok) {
+                            var groups = await groupRes.json();
+                            resultDiv.innerHTML += '<div class="test-item"><span class="pass">✅ 分组API正常</span><br>分组数: ' + groups.length + '</div>';
+                            log('✅ API /api/groups 正常，返回 ' + groups.length + ' 个分组');
+                        }
+                    } catch(e) {
+                        resultDiv.innerHTML += '<div class="test-item"><span class="warn">⚠️ 分组API异常</span></div>';
+                        log('⚠️ /api/groups 异常: ' + e.message);
+                    }
+
+                } else {
+                    resultDiv.innerHTML = '<div class="test-item"><span class="fail">❌ API返回错误</span><br>状态码: ' + response.status + '</div>';
+                    log('❌ API 返回错误: ' + response.status);
+                }
+            } catch(err) {
+                resultDiv.innerHTML = '<div class="test-item"><span class="fail">❌ 无法连接到后端</span><br>错误: ' + err.message + '<br><br><strong>解决方案:</strong><ol><li>确认Java服务已启动（运行 start.bat）</li><li>检查控制台是否有Java进程</li><li>查看浏览器开发者工具的Network标签</li></ol></div>';
+                log('❌ API 连接失败: ' + err.message);
+            }
+        }
+
+        // 自动更新摘要
+        updateSummary();
+
+        log('诊断完成！');
+    </script>
+</body>
+</html>

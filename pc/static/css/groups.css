@@ -1,0 +1,106 @@
+/* ===== 分组管理 ===== */
+
+.group-management {
+    background: var(--color-bg-white);
+    border-radius: var(--radius-12);
+    box-shadow: 0 2px 15px rgba(52, 152, 219, 0.08);
+    overflow: hidden;
+}
+
+.group-list {
+    padding: var(--spacing-20);
+}
+
+.group-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-15);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-10);
+    margin-bottom: var(--spacing-10);
+    transition: all 0.3s ease;
+}
+
+.group-item:hover {
+    border-color: var(--color-primary);
+    background: var(--color-bg-light);
+}
+
+.group-item .group-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-12);
+}
+
+.group-item .group-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--color-bg-lighter) 0%, var(--color-bg-lightest) 100%);
+    border-radius: var(--radius-10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    font-size: var(--font-size-18);
+}
+
+.group-item .group-name {
+    font-weight: 500;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-14);
+}
+
+.group-item .group-count {
+    font-size: var(--font-size-12);
+    color: var(--color-text-muted);
+}
+
+.group-item .group-actions {
+    display: flex;
+    gap: var(--spacing-8);
+}
+
+.group-item .group-actions button {
+    padding: var(--spacing-8) var(--spacing-12);
+    border: none;
+    border-radius: var(--radius-6);
+    cursor: pointer;
+    font-size: var(--font-size-12);
+    transition: all 0.3s ease;
+}
+
+.group-item .group-actions .edit-btn {
+    background: var(--color-bg-lighter);
+    color: var(--color-primary);
+}
+
+.group-item .group-actions .delete-btn {
+    background: var(--color-invalid-bg);
+    color: var(--color-danger);
+}
+
+.add-group-form {
+    padding: var(--spacing-20);
+    border-top: 1px solid var(--color-border-light);
+    background: var(--color-bg-light);
+}
+
+.add-group-form .form-row {
+    display: flex;
+    gap: var(--spacing-10);
+}
+
+.add-group-form input {
+    flex: 1;
+    padding: var(--spacing-12) var(--spacing-15);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-8);
+    font-size: var(--font-size-14);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.add-group-form input:focus {
+    border-color: var(--color-primary);
+}

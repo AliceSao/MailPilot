@@ -1,0 +1,7 @@
+/* ===== 默认主题（Light） ===== */
+/* 此文件为空，使用variables.css中的默认值 */
+/* 当用户选择"默认主题"时，移除其他theme-*类即可 */
+
+body.theme-default {
+    /* 继承variables.css的所有默认变量，无需覆盖 */
+}

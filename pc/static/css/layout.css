@@ -1,0 +1,418 @@
+/* ===== 全局顶栏 ===== */
+.topbar {
+    height: var(--topbar-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-16);
+    background: var(--color-bg-white);
+    border-bottom: 1px solid var(--color-border-light);
+    z-index: var(--z-sidebar-toggle);
+    flex-shrink: 0;
+    gap: var(--spacing-12);
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-16);
+    flex-shrink: 0;
+}
+
+.hamburger-btn {
+    display: flex;  /* PC模式也显示，统一控制侧边栏 */
+}
+
+.topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-8);
+    font-size: var(--font-size-16);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.topbar-logo i {
+    font-size: var(--font-size-20);
+}
+
+.topbar-brand {
+    color: var(--color-text-primary);
+}
+
+.topbar-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    font-size: var(--font-size-13);
+    color: var(--color-text-muted);
+    padding-left: var(--spacing-12);
+    border-left: 1px solid var(--color-border-light);
+}
+
+.breadcrumb-item {
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: var(--spacing-2) var(--spacing-6);
+    border-radius: var(--radius-4);
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.breadcrumb-item:hover {
+    color: var(--color-primary);
+}
+
+.breadcrumb-item.active {
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.topbar-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.topbar-search {
+    position: relative;
+    width: 100%;
+}
+
+.topbar-search i {
+    position: absolute;
+    left: var(--spacing-12);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-13);
+}
+
+.topbar-search input {
+    width: 100%;
+    padding: var(--spacing-8) var(--spacing-12) var(--spacing-8) var(--spacing-30);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-8);
+    background: var(--color-bg-light);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-13);
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.topbar-search input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-8);
+    flex-shrink: 0;
+}
+
+.topbar-account-count {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-6);
+    font-size: var(--font-size-13);
+    color: var(--color-text-secondary);
+    padding: var(--spacing-4) var(--spacing-10);
+    background: var(--color-bg-light);
+    border-radius: var(--radius-8);
+}
+
+.topbar-account-count i {
+    color: var(--color-primary);
+    font-size: var(--font-size-12);
+}
+
+.topbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: var(--radius-8);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: var(--font-size-15);
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.topbar-btn:hover {
+    background: var(--color-bg-light);
+    color: var(--color-primary);
+}
+
+/* ===== 主布局：两栏 CSS Grid（删除funcbar后） ===== */
+.main-layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    grid-template-rows: 1fr;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ===== 侧边栏（两栏布局中） ===== */
+.main-layout .sidebar {
+    position: static;
+    height: auto;
+    transform: none;
+    z-index: auto;
+    box-shadow: none;
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    border-right: 1px solid var(--color-border-light);
+    overflow: hidden;
+    transition: width var(--sidebar-transition), min-width var(--sidebar-transition), max-width var(--sidebar-transition), padding var(--sidebar-transition), border-color var(--sidebar-transition);
+}
+
+.main-layout .sidebar.collapsed {
+    width: 0;
+    min-width: 0;
+    max-width: 0;
+    padding: 0;
+    border-right: none;
+    overflow: hidden;
+}
+
+/* ===== 内容区（在新布局中） ===== */
+.main-layout .content {
+    margin-left: 0;
+    min-height: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== 侧边栏折叠时，内容区自动扩展 ===== */
+.main-layout:has(.sidebar.collapsed) {
+    grid-template-columns: 0 1fr;
+}
+/* ===== 视图容器系统 ===== */
+.view-container {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#view-list {
+    display: flex;
+}
+
+.view-mail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-bg-body);
+    z-index: var(--z-modal);
+    flex-direction: column;
+}
+
+/* 邮件查看器头部 */
+.mail-view-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-12) var(--spacing-16);
+    background: linear-gradient(180deg, var(--color-bg-white), var(--color-bg-light));
+    border-bottom: 1px solid var(--color-border-light);
+    gap: var(--spacing-12);
+    flex-shrink: 0;
+}
+
+.mail-view-header h3 {
+    margin: 0;
+    font-size: var(--font-size-16);
+    color: var(--color-text-primary);
+    flex: 1;
+    text-align: center;
+}
+
+.mail-view-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-6);
+}
+
+/* 邮件查看器主体 */
+.mail-view-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .mail-view-header {
+        padding: var(--spacing-8) var(--spacing-12);
+        gap: var(--spacing-8);
+    }
+    
+    .mail-view-header h3 {
+        font-size: var(--font-size-14);
+        text-align: left;
+    }
+    
+    .mail-view-header span {
+        display: none; /* 手机端隐藏邮箱地址，太长 */
+    }
+    
+    .mail-view-body {
+        flex-direction: column;
+    }
+    
+    /* 手机端邮件列表和内容上下排列 */
+    #mail-list-panel,
+    #mail-content-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+    
+    #mail-list-panel {
+        max-height: 40vh;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    #mail-content-panel {
+        flex: 1;
+        overflow-y: auto;
+    }
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-12) var(--spacing-16);
+    background: linear-gradient(180deg, var(--color-bg-white), var(--color-bg-light));
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.panel-header h1, .panel-header h3 {
+    margin: 0;
+    font-size: var(--font-size-16);
+    color: var(--color-text-primary);
+}
+
+.panel-header-actions {
+    display: flex; align-items: center; gap: var(--spacing-6);
+}
+
+.panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 var(--spacing-16);
+}
+
+.panel-footer {
+    border-top: 1px solid var(--color-border-light);
+    padding: var(--spacing-8) var(--spacing-16);
+    background: var(--color-bg-light);
+}
+
+/* ===== Tab导航条 ===== */
+.tab-nav {
+    display: flex;
+    align-items: stretch;
+    height: var(--tab-height);
+    background: var(--color-bg-light);
+    border-bottom: 1px solid var(--color-border-light);
+    padding: 0 var(--spacing-16);
+}
+
+.tab-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-6);
+    padding: 0 var(--spacing-16);
+    font-size: var(--font-size-13);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-bottom: var(--tab-indicator-height) solid transparent;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+    user-select: none;
+    white-space: nowrap;
+}
+
+.tab-item:hover {
+    color: var(--color-primary);
+}
+
+.tab-item.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    font-weight: 600;
+}
+
+.tab-item i {
+    font-size: var(--font-size-12);
+}
+
+/* Tab分隔线（用于区分内容区切换和子Tab）*/
+.tab-divider {
+    width: 1px;
+    background: var(--color-border-light);
+    margin: 0 var(--spacing-8);
+    align-self: center;
+    height: 20px;
+}
+
+/* Tab内容区：默认隐藏非当前Tab的按钮 */
+.tab-content {
+    display: none;
+}
+
+.tab-content.tab-list {
+    display: inline-flex;
+}
+
+/* 面板拖拽手柄 */
+.panel-resize-handle {
+    width: 5px;
+    cursor: col-resize;
+    background: transparent;
+    transition: background 0.2s;
+    position: relative;
+    z-index: var(--z-resize-handle);
+    flex-shrink: 0;
+}
+
+.panel-resize-handle:hover,
+.panel-resize-handle.active {
+    background: var(--color-primary);
+}
+
+.panel-resize-handle::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -3px;
+    right: -3px;
+    bottom: 0;
+}
+
+/* 面板隐藏时的手柄 */
+.panel-resize-handle.hidden-handle {
+    display: none;
+}
+
+/* 邮箱表格在面板内的适配 */
+.panel-body .email-table {
+    margin-top: 0;
+}
+
+.panel-body .no-data {
+    margin-top: 60px;
+}

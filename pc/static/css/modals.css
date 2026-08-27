@@ -1,0 +1,340 @@
+/* ===== 模态框 ===== */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 62, 80, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-loading);
+}
+
+.modal-content {
+    background-color: var(--color-bg-white);
+    padding: var(--spacing-25) var(--spacing-30);
+    border-radius: var(--radius-16);
+    box-shadow: 0 10px 40px rgba(52, 152, 219, 0.2);
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-content h3 {
+    margin: 0 0 var(--spacing-15);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-18);
+}
+
+.modal-content p {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-14);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-20);
+}
+
+.modal-progress {
+    display: none;
+    margin: calc(-1 * var(--spacing-6)) 0 var(--spacing-20);
+    text-align: left;
+}
+
+.modal-progress.active {
+    display: block;
+}
+
+.modal-progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-12);
+    margin-bottom: var(--spacing-8);
+    font-size: var(--font-size-12);
+    color: var(--color-text-secondary);
+}
+
+.modal-progress-track {
+    width: 100%;
+    height: 10px;
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-lighter);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+}
+
+.modal-progress-bar {
+    width: 0;
+    height: 100%;
+    background: var(--color-primary-gradient);
+    transition: width 0.25s ease;
+}
+
+.modal-progress-note {
+    margin-top: var(--spacing-8);
+    font-size: var(--font-size-12);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+.modal-content.is-progress button {
+    display: none;
+}
+
+.modal-content button {
+    padding: var(--spacing-10) var(--spacing-25);
+    background: var(--color-primary-gradient);
+    color: var(--color-text-white);
+    border: none;
+    border-radius: var(--radius-8);
+    cursor: pointer;
+    font-size: var(--font-size-14);
+    transition: all 0.3s ease;
+}
+
+.modal-content button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(52, 152, 219, 0.35);
+}
+
+/* ===== 导入弹窗 ===== */
+.import-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 62, 80, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-modal);
+}
+
+.import-modal-content {
+    background-color: var(--color-bg-white);
+    padding: 0;
+    border-radius: var(--radius-16);
+    box-shadow: 0 10px 40px rgba(52, 152, 219, 0.2);
+    max-width: 550px;
+    width: 90%;
+    animation: modalIn 0.3s ease;
+    overflow: hidden;
+}
+
+.import-modal-header {
+    background: var(--color-primary-gradient);
+    color: var(--color-text-white);
+    padding: var(--spacing-18) var(--spacing-25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.import-modal-header h3 {
+    margin: 0;
+    font-size: var(--font-size-16);
+    font-weight: 500;
+}
+
+.import-modal-header .close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: var(--color-text-white);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: var(--font-size-18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.import-modal-header .close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.import-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.import-tab {
+    flex: 1;
+    padding: var(--spacing-15);
+    text-align: center;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-14);
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.import-tab.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    background: var(--color-bg-light);
+}
+
+.import-tab i {
+    margin-right: var(--spacing-8);
+}
+
+.import-tab-content {
+    padding: var(--spacing-25);
+}
+
+.import-panel {
+    display: none;
+}
+
+.import-panel.active {
+    display: block;
+}
+
+.import-panel textarea {
+    width: 100%;
+    height: 200px;
+    padding: var(--spacing-15);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-10);
+    font-size: var(--font-size-13);
+    resize: vertical;
+    outline: none;
+    font-family: 'Consolas', monospace;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+}
+
+.import-panel textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.import-panel .file-upload-area {
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-10);
+    padding: var(--spacing-40) var(--spacing-20);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.import-panel .file-upload-area:hover {
+    border-color: var(--color-primary);
+    background: var(--color-bg-light);
+}
+
+.import-panel .file-upload-area i {
+    font-size: var(--font-size-40);
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-15);
+}
+
+.import-panel .file-upload-area p {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-14);
+    margin: 0;
+}
+
+.import-panel .file-upload-area .file-name {
+    margin-top: var(--spacing-10);
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.import-hint {
+    margin-top: var(--spacing-15);
+    padding: var(--spacing-12);
+    background: var(--color-bg-light);
+    border-radius: var(--radius-8);
+    font-size: var(--font-size-12);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+.import-hint code {
+    background: var(--color-bg-lighter);
+    padding: var(--spacing-2) var(--spacing-6);
+    border-radius: var(--radius-4);
+    color: var(--color-primary);
+}
+
+.import-actions {
+    padding: var(--spacing-20) var(--spacing-25);
+    background: var(--color-bg-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-10);
+}
+
+/* ===== 批量复制弹窗 ===== */
+.copy-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 62, 80, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-modal);
+}
+
+.copy-modal-content {
+    background-color: var(--color-bg-white);
+    padding: var(--spacing-25) var(--spacing-30);
+    border-radius: var(--radius-16);
+    box-shadow: 0 10px 40px rgba(52, 152, 219, 0.2);
+    max-width: 350px;
+    width: 90%;
+    animation: modalIn 0.3s ease;
+}
+
+.copy-modal-content h3 {
+    margin: 0 0 var(--spacing-20);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-16);
+    text-align: center;
+}
+
+.copy-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-10);
+}
+
+.copy-option {
+    padding: var(--spacing-12) var(--spacing-15);
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-8);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-14);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-10);
+}
+
+.copy-option:hover {
+    border-color: var(--color-primary);
+    background: var(--color-bg-lighter);
+    color: var(--color-primary);
+}
+
+.copy-option i {
+    font-size: var(--font-size-16);
+}

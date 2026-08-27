@@ -1,0 +1,55 @@
+<!-- ===== 侧边栏 ===== -->
+<div class="sidebar">
+    <div class="sidebar-menu">
+        <div class="menu-label" data-i18n="quickStats">快捷统计</div>
+        <div class="quick-stats">
+            <div class="stat-item stat-valid" data-status="valid" title="点击筛选正常账号">
+                <i class="fas fa-check-circle"></i>
+                <div class="stat-content">
+                    <span class="stat-value" id="valid-count">0</span>
+                    <span class="stat-label" data-i18n="valid">正常</span>
+                </div>
+            </div>
+            <div class="stat-item stat-invalid" data-status="invalid" title="点击筛选异常账号">
+                <i class="fas fa-exclamation-circle"></i>
+                <div class="stat-content">
+                    <span class="stat-value" id="invalid-count">0</span>
+                    <span class="stat-label" data-i18n="invalid">异常</span>
+                </div>
+            </div>
+        </div>
+        <div class="quick-stats mt-sm">
+            <div class="stat-item stat-checking" data-status="checking" title="点击筛选检测中账号">
+                <i class="fas fa-spinner fa-spin"></i>
+                <div class="stat-content">
+                    <span class="stat-value" id="checking-count">0</span>
+                    <span class="stat-label" data-i18n="checking">检测中</span>
+                </div>
+            </div>
+            <div class="stat-item stat-unchecked" data-status="unchecked" title="点击筛选未检测账号">
+                <i class="fas fa-question-circle"></i>
+                <div class="stat-content">
+                    <span class="stat-value" id="unchecked-count">0</span>
+                    <span class="stat-label" data-i18n="unchecked">未检测</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-label" data-i18n="groupShortcut">分组快捷入口</div>
+        <div class="quick-groups" id="quick-groups">
+        </div>
+
+        <div class="menu-label" data-i18n="quickActions">快捷操作</div>
+        <div class="quick-actions">
+            <button class="quick-action-btn" data-action="open-import" title="导入邮箱">
+                <i class="fas fa-file-import"></i>
+            </button>
+            <button class="quick-action-btn" data-action="export-all" title="导出全部">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="quick-action-btn" data-action="refresh-status" title="检测状态">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+/* ===== 深色主题 (Dark Theme) — 变量覆写已在variables.css ===== */
+/* 本文件仅保留无法通过CSS变量覆盖的特殊规则 */
+
+body.theme-dark .sidebar {
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
+}
+body.theme-dark .sidebar ul li a:hover {
+    background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-lighter) 100%);
+    color: var(--color-primary-light);
+}
+body.theme-dark .theme-toggle {
+    background: rgba(0, 0, 0, 0.3);
+}
+body.theme-dark .theme-toggle i {
+    color: var(--color-warning-light);
+}
+body.theme-dark .toolbar {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+body.theme-dark .email-table tbody tr:hover {
+    background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-lighter) 100%);
+}
+body.theme-dark .modal-content {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+body.theme-dark .import-panel textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+body.theme-dark .copy-modal-content {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}

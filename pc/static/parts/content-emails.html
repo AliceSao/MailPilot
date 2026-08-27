@@ -1,0 +1,181 @@
+<!-- ===== 邮箱管理内容区 ===== -->
+<div id="emails" class="content-section active">
+
+    <!-- ===== 视图1：邮箱列表（默认显示）====== -->
+    <div class="view-container" id="view-list">
+        <div class="panel-header">
+            <h1 data-i18n="emailMgmt">邮箱管理</h1>
+        </div>
+        
+        <div class="tab-nav" id="tab-nav">
+            <!-- 邮箱管理内的Tab -->
+            <div class="tab-item active" data-action="switch-tab" data-tab="tab-list">
+                <i class="fas fa-list"></i><span data-i18n="tabList">邮箱列表</span>
+            </div>
+            <div class="tab-item" data-action="switch-tab" data-tab="tab-import">
+                <i class="fas fa-file-import"></i><span data-i18n="tabImport">导入导出</span>
+            </div>
+            <div class="tab-item" data-action="switch-tab" data-tab="tab-batch">
+                <i class="fas fa-tasks"></i><span data-i18n="tabBatch">批量操作</span>
+            </div>
+
+            <div class="tab-divider"></div>
+
+            <!-- 内容区切换（分组管理放在最后）-->
+            <div class="tab-item" data-action="switch-section" data-target="groups" title="分组管理">
+                <i class="fas fa-folder"></i><span data-i18n="groupMgmt">分组管理</span>
+            </div>
+        </div>
+
+        <div class="toolbar toolbar-inner">
+            
+            <!-- ====== 邮箱列表Tab工具栏（仅筛选+全选）====== -->
+            <div class="toolbar-section tab-content tab-list" style="display:inline-flex;align-items:center;gap:var(--spacing-8);">
+                <select class="group-select" id="filter-group" data-action="filter-by-group">
+                    <option value="" data-i18n="allGroups">全部分组</option>
+                </select>
+                <select class="group-select" id="filter-status" data-action="filter-by-status">
+                    <option value="" data-i18n="allStatus">全部状态</option>
+                    <option value="valid">正常</option>
+                    <option value="invalid">异常</option>
+                    <option value="checking">检测中</option>
+                    <option value="unchecked">未检测</option>
+                </select>
+                <button class="toolbar-btn btn-secondary" data-action="select-all-toggle" title="全选本页">
+                    <i class="fas fa-check-double"></i> <span data-i18n="selectAll">全选本页</span>
+                </button>
+                <span class="selected-count" id="selected-count" style="display:none;color:var(--color-text-secondary);font-size:var(--font-size-12);">
+                    已选 <strong id="selected-count-num">0</strong> 项
+                </span>
+            </div>
+
+            <!-- ====== 导入导出Tab工具栏（导入导出专用）====== -->
+            <div class="toolbar-section tab-content tab-import" style="display:none;">
+                <button class="toolbar-btn btn-primary" data-action="open-import-modal">
+                    <i class="fas fa-file-import"></i> <span data-i18n="importBtn">导入邮箱</span>
+                </button>
+                <button class="toolbar-btn btn-secondary" data-action="export-all">
+                    <i class="fas fa-download"></i> <span data-i18n="exportAll">导出全部</span>
+                </button>
+                <button class="toolbar-btn btn-secondary" data-action="export-selected">
+                    <i class="fas fa-file-export"></i> <span data-i18n="exportSelected">导出选中</span>
+                </button>
+            </div>
+
+            <!-- ====== 批量操作Tab工具栏（批量操作专用）====== -->
+            <div class="toolbar-section tab-content tab-batch" style="display:none;">
+                <button class="toolbar-btn btn-success" data-action="batch-renew-selected">
+                    <i class="fas fa-sync-alt"></i> <span data-i18n="batchRenew">批量续期</span>
+                </button>
+                <button class="toolbar-btn btn-check" data-action="batch-check-selected">
+                    <i class="fas fa-search"></i> <span data-i18n="batchCheck">批量检测</span>
+                </button>
+                <button class="toolbar-btn btn-secondary" data-action="open-batch-group-modal">
+                    <i class="fas fa-layer-group"></i> <span data-i18n="batchGroup">批量分组</span>
+                </button>
+                <button class="toolbar-btn btn-secondary" data-action="open-copy-modal">
+                    <i class="fas fa-copy"></i> <span data-i18n="batchCopy">批量复制</span>
+                </button>
+                <button class="toolbar-btn btn-danger" data-action="batch-delete">
+                    <i class="fas fa-trash"></i> <span data-i18n="batchDelete">批量删除</span>
+                </button>
+                <button class="toolbar-btn btn-danger" data-action="clear-all-data">
+                    <i class="fas fa-trash-alt"></i> <span data-i18n="clearAll">清空邮箱</span>
+                </button>
+            </div>
+
+        </div>
+
+        <div class="panel-body">
+            <table class="email-table" id="email-table">
+                <thead>
+                    <tr>
+                        <th style="width:40px"><input type="checkbox" id="select-all"></th>
+                        <th class="id-col" data-i18n="colId">ID</th>
+                        <th data-i18n="colEmail">邮箱地址</th>
+                        <th data-i18n="colPassword">密码</th>
+                        <th data-i18n="colGroup">分组</th>
+                        <th data-i18n="colStatus">令牌状态</th>
+                        <th data-i18n="colPermission">权限类型</th>
+                        <th data-i18n="colExpiry">令牌有效期</th>
+                        <th data-i18n="colActions">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <div class="no-data" id="no-data">
+                <i class="fas fa-inbox"></i>
+                <span data-i18n="noData">暂无数据</span>
+            </div>
+        </div>
+
+        <div class="panel-footer">
+            <div class="pagination-section">
+                <div class="pagination" id="pagination"></div>
+                <div class="pagination-tools">
+                    <div class="page-jump">
+                        <span>跳转到</span>
+                        <input type="number" id="page-jump-input" min="1" step="1" placeholder="页码" onkeydown="if(event.key==='Enter'){ jumpToPage(); }">
+                        <button class="toolbar-btn btn-secondary" type="button" data-action="jump-to-page">跳转</button>
+                        <span class="page-total" id="page-total">共 0 页</span>
+                    </div>
+                    <select id="items-per-page" onchange="changeItemsPerPage(this.value)">
+                        <option value="10">10 条/页</option>
+                        <option value="20">20 条/页</option>
+                        <option value="50">50 条/页</option>
+                        <option value="100">100 条/页</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div><!-- /view-list -->
+
+    <!-- ===== 视图2：邮件查看器（全屏模式）====== -->
+    <div class="view-container view-mail" id="view-mail" style="display:none;">
+        <div class="mail-view-header">
+            <button class="toolbar-btn btn-secondary" data-action="back-to-list" title="返回列表">
+                <i class="fas fa-arrow-left"></i> <span>返回列表</span>
+            </button>
+            <h3 id="mail-view-title">查看邮件 - <span id="mail-view-email"></span></h3>
+            <div class="mail-view-actions">
+                <button class="toolbar-btn btn-icon" data-action="refresh-mails" title="刷新">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="mail-view-tabs">
+            <div class="mail-view-tab active" data-mailbox="INBOX" data-action="switch-mailbox">
+                <i class="fas fa-inbox"></i><span data-i18n="inbox">收件箱</span>
+            </div>
+            <div class="mail-view-tab" data-mailbox="Junk" data-action="switch-mailbox">
+                <i class="fas fa-trash-alt"></i><span data-i18n="junk">垃圾箱</span>
+            </div>
+            <!-- 移动端：查看邮件详情按钮 -->
+            <button class="mail-mobile-back-btn" id="mobile-view-detail-btn" style="display:none;" data-action="toggle-mobile-mail-detail">
+                <i class="fas fa-arrow-right"></i><span>查看详情</span>
+            </button>
+        </div>
+
+        <div class="mail-view-body">
+            <div class="mail-list-panel" id="mail-list-panel"></div>
+            <div class="mail-content-panel" id="mail-content-panel">
+                <div class="mail-content-header" id="mail-content-header" style="display:none">
+                    <h4 id="mail-detail-subject"></h4>
+                    <div class="mail-meta">
+                        <span id="mail-detail-sender"></span>
+                        <span id="mail-detail-date"></span>
+                    </div>
+                </div>
+                <div class="mail-content-body" id="mail-content-body">
+                    <div class="mail-empty">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /view-mail -->
+
+</div><!-- /emails -->

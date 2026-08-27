@@ -1,0 +1,105 @@
+<!-- ===== 模态框集合 ===== -->
+
+<!-- 普通提示模态框 -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h3 id="modal-title"></h3>
+        <p id="modal-message"></p>
+        <div class="modal-progress" id="modal-progress">
+            <div class="modal-progress-meta">
+                <span id="modal-progress-label"></span>
+                <span id="modal-progress-pct"></span>
+            </div>
+            <div class="modal-progress-track">
+                <div class="modal-progress-bar" id="modal-progress-bar"></div>
+            </div>
+            <div class="modal-progress-note" id="modal-progress-note"></div>
+        </div>
+        <button data-action="close-modal" data-i18n="ok">确定</button>
+    </div>
+</div>
+
+<!-- 导入邮箱弹窗 -->
+<div class="import-modal" id="import-modal">
+    <div class="import-modal-content">
+        <div class="import-modal-header">
+            <h3><i class="fas fa-file-import"></i> <span data-i18n="importTitle">导入邮箱</span></h3>
+            <button class="close-btn" data-action="close-import-modal">&times;</button>
+        </div>
+        <div class="import-tabs">
+            <div class="import-tab active" data-tab="text" onclick="switchImportTab('text')">
+                <i class="fas fa-keyboard"></i><span data-i18n="textInput">文本输入</span>
+            </div>
+            <div class="import-tab" data-tab="file" onclick="switchImportTab('file')">
+                <i class="fas fa-file-alt"></i><span data-i18n="fileInput">文件导入</span>
+            </div>
+        </div>
+        <div class="import-tab-content">
+            <div class="import-panel active" id="import-panel-text">
+                <textarea id="import-text" placeholder="每行一条数据，格式：邮箱----密码----ClientID----RefreshToken"></textarea>
+                <div class="import-hint" data-i18n-html="importHint">
+                    <strong>格式说明：</strong>支持两种格式，每行一条：<br>
+                    格式1：<code>邮箱----密码----客户端ID----刷新令牌</code>（完整）<br>
+                    格式2：<code>邮箱----密码</code>（仅账密，无令牌功能）
+                </div>
+            </div>
+            <div class="import-panel" id="import-panel-file">
+                <div class="file-upload-area" id="file-upload-area" onclick="document.getElementById('file-input').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击选择文件</p>
+                    <div class="file-name" id="file-name"></div>
+                </div>
+                <input type="file" id="file-input" accept=".txt" class="hidden" onchange="handleFileSelect(event)">
+                <div class="import-hint" data-i18n-html="importHint">
+                    <strong>格式说明：</strong>支持两种格式，每行一条：<br>
+                    格式1：<code>邮箱----密码----客户端ID----刷新令牌</code>（完整）<br>
+                    格式2：<code>邮箱----密码</code>（仅账密，无令牌功能）
+                </div>
+            </div>
+        </div>
+        <div class="import-actions">
+            <button class="toolbar-btn btn-secondary" data-action="close-import-modal"><span data-i18n="cancel">取消</span></button>
+            <button class="toolbar-btn btn-primary" data-action="import-emails">
+                <i class="fas fa-check"></i><span data-i18n="confirmImport">确认导入</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 批量复制弹窗 -->
+<div class="copy-modal" id="copy-modal">
+    <div class="copy-modal-content">
+        <h3 data-i18n="copyTitle">选择复制内容</h3>
+        <div class="copy-options">
+            <div class="copy-option" onclick="batchCopy('email')">
+                <i class="fas fa-envelope"></i>
+                <span data-i18n="copyEmail">仅复制邮箱地址</span>
+            </div>
+            <div class="copy-option" onclick="batchCopy('password')">
+                <i class="fas fa-key"></i>
+                <span data-i18n="copyPwd">仅复制密码</span>
+            </div>
+            <div class="copy-option" onclick="batchCopy('both')">
+                <i class="fas fa-copy"></i>
+                <span data-i18n="copyBoth">复制邮箱和密码</span>
+            </div>
+        </div>
+        <div class="import-footer">
+            <button class="toolbar-btn btn-secondary" data-action="close-copy-modal"><span data-i18n="cancel">取消</span></button>
+        </div>
+    </div>
+</div>
+
+<!-- 批量设置分组弹窗 -->
+<div class="modal" id="batch-group-modal">
+    <div class="modal-content">
+        <h3 data-i18n="batchGroupTitle">批量设置分组</h3>
+        <select id="batch-group-select" class="group-select batch-group-select">
+            <option value="" data-i18n="selectGroup">选择分组</option>
+        </select>
+        <div class="modal-btn-row">
+            <button class="toolbar-btn btn-secondary" data-action="close-batch-group-modal"><span data-i18n="cancel">取消</span></button>
+            <button class="toolbar-btn btn-primary" id="apply-batch-group-btn"><span data-i18n="confirm">确认</span></button>
+        </div>
+    </div>
+</div>

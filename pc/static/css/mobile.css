@@ -1,0 +1,438 @@
+/* ===== 移动端适配（四栏→单栏堆叠） ===== */
+@media (max-width: 768px) {
+    body.mobile-mode {
+        flex-direction: column;
+    }
+
+    /* ---- 汉堡菜单显示 ---- */
+    body.mobile-mode .hamburger-btn {
+        display: flex;
+    }
+
+    /* ---- 移动端侧边栏遮罩 ---- */
+    body.mobile-mode .mobile-sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: calc(var(--z-modal) - 1);
+        backdrop-filter: blur(2px);
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        cursor: pointer;
+    }
+    body.mobile-mode .mobile-sidebar-overlay.active {
+        display: block !important;
+        opacity: 1;
+    }
+
+    /* ---- 顶栏：搜索框收缩 ---- */
+    body.mobile-mode .topbar {
+        padding: 0 var(--spacing-10);
+        gap: var(--spacing-8);
+    }
+    body.mobile-mode .topbar-left {
+        gap: var(--spacing-8);
+    }
+    body.mobile-mode .topbar-logo i {
+        font-size: var(--font-size-16);
+    }
+    body.mobile-mode .topbar-brand {
+        display: none;
+    }
+    body.mobile-mode .topbar-breadcrumb {
+        display: none;
+    }
+    body.mobile-mode .topbar-center {
+        flex: 1;
+        max-width: none;
+    }
+    body.mobile-mode .topbar-search input {
+        font-size: var(--font-size-12);
+        padding: var(--spacing-6) var(--spacing-10) var(--spacing-6) var(--spacing-25);
+    }
+    body.mobile-mode .topbar-account-count {
+        font-size: var(--font-size-11);
+        padding: var(--spacing-4) var(--spacing-6);
+    }
+    body.mobile-mode .topbar-btn {
+        width: 28px;
+        height: 28px;
+        font-size: var(--font-size-13);
+    }
+
+    /* ---- 主布局：单栏 ---- */
+    body.mobile-mode .main-layout {
+        grid-template-columns: 1fr;
+        position: relative;
+    }
+
+    /* ---- 功能栏：隐藏 ---- */
+    body.mobile-mode .funcbar {
+        display: none;
+    }
+
+    /* ---- 侧边栏：滑出式 ---- */
+    body.mobile-mode .main-layout .sidebar {
+        display: none;
+        position: fixed;
+        top: var(--topbar-height);
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: var(--z-modal);
+        background: var(--color-bg-sidebar);
+        box-shadow: var(--shadow-lg);
+        transition: transform var(--sidebar-transition);
+        transform: translateX(-100%);
+    }
+    body.mobile-mode .main-layout .sidebar.mobile-visible {
+        display: flex;
+        transform: translateX(0);
+    }
+
+    /* ---- 内容区：全宽 ---- */
+    body.mobile-mode .main-layout .content {
+        width: 100%;
+        padding: var(--spacing-10);
+    }
+
+    /* ---- 邮件查看器：移动端优化 ---- */
+    body.mobile-mode .mail-view-body {
+        flex-direction: column;
+    }
+
+    body.mobile-mode .mail-list-panel {
+        width: 100%;
+        flex: 1;
+        min-height: 70vh;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border-light);
+        overflow-y: auto;
+    }
+
+    body.mobile-mode .mail-content-panel {
+        display: none;
+    }
+
+    body.mobile-mode .mail-content-panel.mobile-visible {
+        display: flex;
+        flex: 1;
+    }
+
+    /* 移动端邮件详情返回按钮 */
+    body.mobile-mode .mail-mobile-back-btn {
+        display: flex !important;
+        align-items: center;
+        gap: var(--spacing-6);
+        padding: var(--spacing-12) var(--spacing-16);
+        background: var(--color-primary-gradient);
+        color: var(--color-text-white);
+        border: none;
+        cursor: pointer;
+        font-size: var(--font-size-14);
+        font-weight: 500;
+    }
+
+    body.mobile-mode .mail-mobile-back-btn i {
+        font-size: var(--font-size-16);
+    }
+
+    /* ---- 工作台：单栏 ---- */
+    body.mobile-mode .workspace {
+        flex-direction: column;
+    }
+    body.mobile-mode .panel-left {
+        min-width: unset;
+        width: 100%;
+    }
+    body.mobile-mode .panel-right {
+        width: 100%;
+        max-width: 100%;
+        min-width: unset;
+        border-left: none;
+        border-top: 1px solid var(--color-border-light);
+    }
+    body.mobile-mode .panel-resize-handle {
+        display: none;
+    }
+
+    /* ---- 工具栏：两列网格 ---- */
+    body.mobile-mode .toolbar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-6);
+    }
+    body.mobile-mode .toolbar .group-select {
+        font-size: var(--font-size-12);
+        padding: var(--spacing-8);
+    }
+    body.mobile-mode .toolbar-btn {
+        font-size: var(--font-size-12);
+        padding: var(--spacing-8) var(--spacing-6);
+        text-align: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    /* ---- 表格 → 卡片 ---- */
+    body.mobile-mode .email-table {
+        display: block;
+    }
+    body.mobile-mode .email-table thead {
+        display: none;
+    }
+    body.mobile-mode .email-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-8);
+    }
+    body.mobile-mode .email-table tbody tr {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        background: var(--color-bg-white);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--radius-10);
+        padding: var(--spacing-10) var(--spacing-12);
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+        position: relative;
+    }
+    body.mobile-mode .email-table tbody tr:hover {
+        background: var(--color-bg-lighter);
+    }
+    body.mobile-mode .email-table tbody tr:has(input[type="checkbox"]:checked) {
+        border-color: var(--color-primary);
+        background: var(--color-bg-lighter);
+    }
+
+    body.mobile-mode .email-table tbody td:nth-child(1) {
+        order: 0; position: absolute; top: 10px; right: 10px;
+    }
+    body.mobile-mode .email-table tbody td:nth-child(2) {
+        display: none;
+    }
+    body.mobile-mode .email-table tbody td:nth-child(3) {
+        order: 1; width: 100%;
+        font-size: var(--font-size-14); font-weight: 600;
+        color: var(--color-text-primary);
+        padding-right: var(--spacing-30);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    body.mobile-mode .email-table tbody td:nth-child(4) {
+        order: 2; width: 100%;
+        font-size: var(--font-size-12); color: var(--color-text-muted);
+        margin-top: var(--spacing-2);
+    }
+    body.mobile-mode .email-table tbody td:nth-child(4)::before {
+        content: "密码: "; color: var(--color-text-placeholder);
+        font-size: var(--font-size-11);
+    }
+    body.mobile-mode .email-table tbody td:nth-child(5),
+    body.mobile-mode .email-table tbody td:nth-child(6),
+    body.mobile-mode .email-table tbody td:nth-child(7),
+    body.mobile-mode .email-table tbody td:nth-child(8) {
+        order: 3; flex-shrink: 0;
+        display: inline-flex; align-items: center;
+        font-size: var(--font-size-11); margin-top: var(--spacing-6);
+        margin-right: var(--spacing-4);
+    }
+    body.mobile-mode .email-table tbody td:last-child {
+        order: 4; width: 100%;
+        display: flex; gap: var(--spacing-6);
+        padding-top: var(--spacing-8); margin-top: var(--spacing-8);
+        border-top: 1px solid var(--color-border-light);
+    }
+    body.mobile-mode .email-table tbody td:last-child button {
+        flex: 1; padding: var(--spacing-8) 0; font-size: var(--font-size-12);
+        border-radius: var(--radius-6); text-align: center;
+        display: flex; align-items: center; justify-content: center; gap: var(--spacing-4);
+    }
+
+    /* ---- 暗色模式卡片 ---- */
+    body.theme-dark .email-table tbody tr {
+        background: var(--color-bg-light);
+        border-color: var(--color-border);
+    }
+    body.theme-dark .email-table tbody tr:hover {
+        background: var(--color-bg-lighter);
+    }
+    body.theme-dark .email-table tbody td:nth-child(3) {
+        color: var(--color-text-secondary);
+    }
+    body.theme-dark .email-table tbody td:nth-child(4) {
+        color: var(--color-text-muted);
+    }
+    body.theme-dark .email-table tbody td:last-child {
+        border-top-color: var(--color-border);
+    }
+
+    /* ---- 分页 ---- */
+    body.mobile-mode .pagination-section {
+        flex-direction: column; gap: var(--spacing-8);
+        padding: var(--spacing-8) 0;
+    }
+    body.mobile-mode .pagination {
+        display: flex; flex-wrap: wrap; gap: var(--spacing-4);
+        justify-content: center;
+    }
+    body.mobile-mode .pagination button {
+        padding: var(--spacing-6) var(--spacing-10);
+        font-size: var(--font-size-11); min-width: 32px;
+    }
+    body.mobile-mode .pagination-tools {
+        flex-wrap: wrap; gap: var(--spacing-6);
+        justify-content: center;
+    }
+    body.mobile-mode .page-jump input {
+        width: 48px; font-size: var(--font-size-12);
+    }
+    body.mobile-mode .page-jump span,
+    body.mobile-mode .page-total {
+        font-size: var(--font-size-11);
+    }
+    body.mobile-mode #items-per-page {
+        font-size: var(--font-size-11); padding: var(--spacing-5);
+    }
+
+    /* ---- 弹窗 ---- */
+    body.mobile-mode .modal-content {
+        width: 92%; max-width: 92%;
+        padding: var(--spacing-16);
+    }
+    body.mobile-mode .modal-content h3 {
+        font-size: var(--font-size-15);
+    }
+    body.mobile-mode .import-modal-content {
+        width: 96%; max-height: 88vh; overflow-y: auto;
+        padding: var(--spacing-14);
+    }
+    body.mobile-mode .import-modal-content textarea {
+        height: 110px; font-size: var(--font-size-13);
+    }
+    body.mobile-mode .import-tab {
+        font-size: var(--font-size-12);
+        padding: var(--spacing-8) var(--spacing-14);
+    }
+    body.mobile-mode .import-hint {
+        font-size: var(--font-size-11);
+    }
+    body.mobile-mode .import-actions {
+        gap: var(--spacing-8);
+    }
+    body.mobile-mode .import-actions button {
+        flex: 1; font-size: var(--font-size-13);
+        padding: var(--spacing-10);
+    }
+
+    body.mobile-mode .mail-view-content {
+        width: 100%; height: 100%;
+        max-width: 100%; border-radius: 0;
+    }
+    body.mobile-mode .mail-view-header {
+        padding: var(--spacing-10) var(--spacing-12);
+    }
+    body.mobile-mode .mail-view-header h3 {
+        font-size: var(--font-size-13); overflow: hidden;
+        text-overflow: ellipsis; white-space: nowrap;
+        max-width: 55vw;
+    }
+    body.mobile-mode .mail-view-tabs .mail-view-tab {
+        font-size: var(--font-size-12);
+        padding: var(--spacing-8) var(--spacing-14);
+    }
+    body.mobile-mode .mail-view-body {
+        flex-direction: column;
+    }
+    body.mobile-mode .mail-list-panel {
+        width: 100%;
+        flex: 1;
+        min-height: 70vh;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border-light);
+        overflow-y: auto;
+    }
+
+    body.mobile-mode .mail-list-item {
+        padding: var(--spacing-10);
+        min-height: 70px;
+        flex-shrink: 0;
+    }
+    body.mobile-mode .mail-sender {
+        font-size: var(--font-size-12);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    body.mobile-mode .mail-subject {
+        font-size: var(--font-size-12);
+    }
+    body.mobile-mode .mail-date {
+        font-size: var(--font-size-10);
+    }
+    body.mobile-mode .mail-content-panel {
+        width: 100%; padding: var(--spacing-12);
+        overflow-x: hidden;
+    }
+    body.mobile-mode .mail-content-header h4 {
+        font-size: var(--font-size-14); word-break: break-word;
+    }
+    body.mobile-mode .mail-content-body {
+        font-size: var(--font-size-13); overflow-x: auto;
+        word-break: break-word;
+    }
+    body.mobile-mode .mail-content-body img {
+        max-width: 100%; height: auto;
+    }
+    body.mobile-mode .mail-content-body table {
+        max-width: 100%; font-size: var(--font-size-12);
+    }
+
+    body.mobile-mode .copy-modal-content {
+        width: 92%; padding: var(--spacing-16);
+    }
+    body.mobile-mode .copy-option {
+        padding: var(--spacing-14); font-size: var(--font-size-14);
+        border-radius: var(--radius-8);
+    }
+    body.mobile-mode .group-management {
+        padding: var(--spacing-10);
+    }
+    body.mobile-mode .group-item {
+        padding: var(--spacing-12);
+    }
+    body.mobile-mode .add-group-form .form-row {
+        flex-direction: column; gap: var(--spacing-8);
+    }
+    body.mobile-mode .add-group-form input {
+        width: 100%; font-size: var(--font-size-14);
+        padding: var(--spacing-10);
+    }
+    body.mobile-mode .add-group-form button {
+        width: 100%; padding: var(--spacing-10);
+    }
+
+    body.mobile-mode .content {
+        padding-bottom: 80px;
+    }
+    body.mobile-mode .pagination-section {
+        margin-bottom: 60px;
+    }
+}
+
+@media (max-width: 400px) {
+    body.mobile-mode .topbar-logo i {
+        font-size: var(--font-size-14);
+    }
+    body.mobile-mode .topbar-search input {
+        font-size: var(--font-size-11);
+    }
+    body.mobile-mode .content h1 {
+        font-size: var(--font-size-14);
+    }
+    body.mobile-mode .toolbar-btn {
+        font-size: var(--font-size-11);
+        padding: var(--spacing-6) var(--spacing-4);
+    }
+}

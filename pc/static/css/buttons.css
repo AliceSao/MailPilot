@@ -1,0 +1,93 @@
+/* ===== 工具栏按钮 ===== */
+.toolbar-btn {
+    padding: var(--spacing-10) var(--spacing-18);
+    border: none;
+    border-radius: var(--radius-8);
+    cursor: pointer;
+    font-size: var(--font-size-13);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-6);
+    white-space: nowrap;
+}
+
+.toolbar-btn i {
+    font-size: var(--font-size-14);
+}
+
+.btn-primary {
+    background: var(--color-primary-gradient);
+    color: var(--color-text-white);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(52, 152, 219, 0.35);
+}
+
+.btn-secondary {
+    background: var(--color-bg-white);
+    color: var(--color-primary);
+    border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+    background: var(--color-bg-light);
+    border-color: var(--color-primary);
+}
+
+.btn-danger {
+    background: var(--color-danger-gradient);
+    color: var(--color-text-white);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(231, 76, 60, 0.35);
+}
+
+/* ===== 按钮补充类 ===== */
+.btn-success { background: var(--color-success-gradient); color: var(--color-text-white); }
+.btn-success:hover { background: linear-gradient(135deg, var(--color-success), var(--color-success-light)); }
+.btn-check { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); color: var(--color-text-white); }
+.btn-check:hover { background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary)); }
+.btn-warning { background: var(--color-warning-gradient); color: var(--color-text-white); }
+
+/* ===== 工具栏分隔线 ===== */
+.toolbar-break { width: 100%; height: 0; flex-basis: 100%; }
+
+/* ===== 批量操作弹窗 ===== */
+.batch-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: var(--z-batch-overlay);
+    display: flex; align-items: center; justify-content: center;
+}
+.batch-box {
+    background: var(--color-bg-white); border-radius: var(--radius-12); padding: var(--spacing-24);
+    max-width: 340px; width: 90%; text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+body.theme-dark .batch-box { background: var(--color-bg-light); color: var(--color-text-secondary); }
+body.theme-starry .batch-box { background: var(--color-bg-light); color: var(--color-text-secondary); }
+.batch-box h3 { margin: 0 0 var(--spacing-16); font-size: var(--font-size-16); }
+.batch-box .btn-col { display: flex; flex-direction: column; gap: var(--spacing-10); }
+.batch-box button {
+    padding: var(--spacing-12); border: none; border-radius: var(--radius-8);
+    font-size: var(--font-size-14); cursor: pointer;
+}
+.batch-box .btn-cancel { background: var(--color-text-muted); color: var(--color-text-white); }
+
+/* ===== 主题切换按钮 ===== */
+.theme-toggle-btn { cursor: pointer; }
+
+/* ===== 语言切换按钮 ===== */
+.lang-toggle { cursor: pointer; width: 24px; height: 24px; font-size: var(--font-size-11); }
+
+/* ===== 工具栏容器 ===== */
+.toolbar-inner { flex-wrap: wrap; gap: var(--spacing-6); }
+
+/* ===== 弹窗按钮行 ===== */
+.modal-btn-row { display: flex; gap: var(--spacing-10); justify-content: center; }

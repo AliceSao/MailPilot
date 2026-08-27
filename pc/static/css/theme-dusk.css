@@ -1,0 +1,12 @@
+/* ===== 黄昏主题 (Dusk) — 变量覆写已在variables.css ===== */
+/* 本文件仅保留无法通过CSS变量覆盖的特殊规则 */
+
+body.theme-dusk .sidebar {
+    box-shadow: 2px 0 15px rgba(74, 37, 32, 0.3);
+}
+body.theme-dusk .sidebar-menu ul li a:hover {
+    background: rgba(230, 126, 34, 0.15);
+}
+body.theme-dusk .loading-overlay {
+    background: rgba(26, 15, 10, 0.8);
+}

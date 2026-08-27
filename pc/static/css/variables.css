@@ -1,0 +1,248 @@
+/* ============================================================
+   MailPilot CSS Variables
+   所有颜色、尺寸、间距统一在此定义，禁止在组件中硬编码
+   ============================================================ */
+
+:root {
+    /* ===== 主色调 ===== */
+    --color-primary: #3498db;
+    --color-primary-light: #5dade2;
+    --color-primary-dark: #2980b9;
+    --color-primary-gradient: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+
+    /* ===== 功能色 ===== */
+    --color-success: #27ae60;
+    --color-success-light: #2ecc71;
+    --color-success-gradient: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    --color-danger: #e74c3c;
+    --color-danger-light: #ec7063;
+    --color-danger-gradient: linear-gradient(135deg, #e74c3c 0%, #ec7063 100%);
+    --color-warning: #f39c12;
+    --color-warning-light: #f1c40f;
+    --color-warning-gradient: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+
+    /* ===== 背景色 ===== */
+    --color-bg-body: linear-gradient(135deg, #e8f4fc 0%, #f0f8ff 100%);
+    --color-bg-white: #ffffff;
+    --color-bg-light: #f8fbff;
+    --color-bg-lighter: #e8f4fc;
+    --color-bg-lightest: #d6eaf8;
+    --color-bg-sidebar: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    --color-bg-mail-reader: #2a2d3e;
+
+    /* ===== 文字色 ===== */
+    --color-text-primary: #2c3e50;
+    --color-text-secondary: #5a6c7d;
+    --color-text-muted: #7f8c8d;
+    --color-text-placeholder: #a0b4c4;
+    --color-text-white: #ffffff;
+
+    /* ===== 边框色 ===== */
+    --color-border: #d6eaf8;
+    --color-border-light: #e8f4fc;
+    --color-border-focus: #3498db;
+
+    /* ===== 状态色 ===== */
+    --color-valid-bg: #d4edda;
+    --color-valid-text: #155724;
+    --color-invalid-bg: #f8d7da;
+    --color-invalid-text: #721c24;
+    --color-checking-bg: #fff3cd;
+    --color-checking-text: #856404;
+    --color-unchecked-bg: #e2e3e5;
+    --color-unchecked-text: #6c757d;
+
+    /* ===== 阴影 ===== */
+    --shadow-sm: 0 2px 10px rgba(52, 152, 219, 0.08);
+    --shadow-md: 0 4px 15px rgba(52, 152, 219, 0.3);
+    --shadow-lg: 0 10px 40px rgba(52, 152, 219, 0.2);
+    --shadow-overlay: rgba(44, 62, 80, 0.5);
+
+    /* ===== 间距 ===== */
+    --spacing-2: 2px;
+    --spacing-4: 4px;
+    --spacing-5: 5px;
+    --spacing-6: 6px;
+    --spacing-8: 8px;
+    --spacing-10: 10px;
+    --spacing-12: 12px;
+    --spacing-14: 14px;
+    --spacing-15: 15px;
+    --spacing-16: 16px;
+    --spacing-18: 18px;
+    --spacing-20: 20px;
+    --spacing-24: 24px;
+    --spacing-25: 25px;
+    --spacing-30: 30px;
+    --spacing-40: 40px;
+
+    /* ===== 圆角 ===== */
+    --radius-4: 4px;
+    --radius-6: 6px;
+    --radius-8: 8px;
+    --radius-10: 10px;
+    --radius-12: 12px;
+    --radius-16: 16px;
+    --radius-20: 20px;
+    --radius-pill: 999px;
+
+    /* ===== 尺寸 ===== */
+    --sidebar-width: 220px;
+    --sidebar-width-collapsed: 60px;
+    --sidebar-transition: 0.3s ease;
+    --tab-height: 40px;
+    --tab-indicator-height: 3px;
+
+    /* ===== 四栏布局尺寸 ===== */
+    --topbar-height: 52px;
+    --funcbar-width: 48px;
+    --funcbar-icon-size: 18px;
+    --panel-right-width: 320px;
+    --panel-right-min: 260px;
+    --panel-right-max: 50%;
+
+    --font-size-9: 9px;
+    --font-size-10: 10px;
+    --font-size-11: 11px;
+    --font-size-12: 12px;
+    --font-size-13: 13px;
+    --font-size-14: 14px;
+    --font-size-15: 15px;
+    --font-size-16: 16px;
+    --font-size-18: 18px;
+    --font-size-20: 20px;
+    --font-size-22: 22px;
+    --font-size-24: 24px;
+    --font-size-26: 26px;
+    --font-size-28: 28px;
+    --font-size-40: 40px;
+    --font-size-48: 48px;
+    --font-size-title: 24px;
+
+    /* ===== 过渡 ===== */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+
+    /* ===== 字距 ===== */
+    --letter-spacing-normal: 1px;
+    --letter-spacing-wide: 0.5px;
+
+    /* ===== 层级 ===== */
+    --z-base: 1;
+    --z-sidebar-toggle: 10;
+    --z-resize-handle: 10;
+    --z-modal: 1000;
+    --z-loading: 2000;
+    --z-batch-overlay: 9998;
+    --z-toast: 9999;
+}
+
+/* ===== 深色主题变量覆写 ===== */
+body.theme-dark {
+    --color-primary: #5dade2;
+    --color-primary-light: #85c1e9;
+    --color-primary-gradient: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+
+    --color-bg-body: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --color-bg-white: #1a1a2e;
+    --color-bg-light: #2a2a4a;
+    --color-bg-lighter: #1f3a5f;
+    --color-bg-lightest: #3a3a5a;
+    --color-bg-sidebar: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+
+    --color-text-primary: #ecf0f1;
+    --color-text-secondary: #b0bec5;
+    --color-text-muted: #6c7a89;
+    --color-text-placeholder: #5a6c7d;
+
+    --color-border: #3a3a5a;
+    --color-border-light: #2a2a4a;
+
+    /* 状态文字颜色（深色主题优化：提高对比度）*/
+    --color-valid-text: #2ecc71;           /* 亮绿色（原#155724太暗）*/
+    --color-invalid-text: #ff6b6b;         /* 亮红色（原#721c24太暗）*/
+    --color-checking-text: #ffd93d;        /* 亮黄色（原#856404太暗）*/
+    --color-unchecked-text: #b0bec5;       /* 浅灰色（原#6c757d稍暗）*/
+
+    --color-valid-bg: linear-gradient(135deg, #1e4620 0%, #2d5a2e 100%);
+    --color-invalid-bg: linear-gradient(135deg, #4a1c1c 0%, #5c2727 100%);
+    --color-checking-bg: linear-gradient(135deg, #4a4020 0%, #5c5027 100%);
+    --color-unchecked-bg: linear-gradient(135deg, #3a3a4a 0%, #4a4a5a 100%);
+
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --shadow-overlay: rgba(0, 0, 0, 0.5);
+}
+
+/* ===== 星空主题变量覆写 ===== */
+body.theme-starry {
+    --color-primary: #7b68ee;
+    --color-primary-light: #9b59b6;
+    --color-primary-dark: #302b63;
+    --color-primary-gradient: linear-gradient(135deg, #7b68ee 0%, #9b59b6 100%);
+
+    --color-bg-body: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    --color-bg-white: #1a1a3e;
+    --color-bg-light: #1a1a3e;
+    --color-bg-lighter: #252350;
+    --color-bg-lightest: #302b63;
+    --color-bg-sidebar: linear-gradient(180deg, #1a1a3e 0%, #0f0c29 100%);
+
+    --color-text-primary: #c5b3f0;
+    --color-text-secondary: #d5d0e6;
+    --color-text-muted: #b8a9d9;
+    --color-text-placeholder: #8878b8;
+    --color-text-white: #ffffff;
+
+    --color-border: #302b63;
+    --color-border-light: #302b63;
+    --color-border-focus: #7b68ee;
+
+    --color-valid-bg: #1a3a1e;
+    --color-valid-text: #2ecc71;
+    --color-invalid-bg: #3a1a1a;
+    --color-invalid-text: #e74c3c;
+    --color-checking-bg: #3a3a1a;
+    --color-checking-text: #f39c12;
+    --color-unchecked-bg: #302b63;
+    --color-unchecked-text: #b8a9d9;
+
+    --shadow-sm: 0 2px 10px rgba(48, 43, 99, 0.3);
+    --shadow-overlay: rgba(15, 12, 41, 0.8);
+}
+
+/* ===== 黄昏主题变量覆写 ===== */
+body.theme-dusk {
+    --color-primary: #e67e22;
+    --color-primary-light: #f0c27a;
+    --color-primary-dark: #d35400;
+    --color-primary-gradient: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+
+    --color-bg-body: linear-gradient(135deg, #2c1810 0%, #4a2520 50%, #1a0f0a 100%);
+    --color-bg-white: #3a1f18;
+    --color-bg-light: #3a1f18;
+    --color-bg-lighter: #4a2520;
+    --color-bg-lightest: #5a3020;
+    --color-bg-sidebar: linear-gradient(180deg, #3a1f18 0%, #2c1810 100%);
+
+    --color-text-primary: #f0c27a;
+    --color-text-secondary: #e8d5c0;
+    --color-text-muted: #d4a574;
+    --color-text-placeholder: #c0956a;
+    --color-text-white: #ffffff;
+
+    --color-border: #4a2520;
+    --color-border-light: #4a2520;
+    --color-border-focus: #e67e22;
+
+    --color-valid-bg: #1a3a1a;
+    --color-valid-text: #2ecc71;
+    --color-invalid-bg: #3a1a1a;
+    --color-invalid-text: #e74c3c;
+    --color-checking-bg: #3a3a1a;
+    --color-checking-text: #f39c12;
+    --color-unchecked-bg: #4a2520;
+    --color-unchecked-text: #d4a574;
+
+    --shadow-sm: 0 2px 10px rgba(74, 37, 32, 0.3);
+    --shadow-overlay: rgba(26, 15, 10, 0.8);
+}

@@ -1,0 +1,74 @@
+# ===== 数据与敏感文件 =====
+# 运行时输出目录（含账号数据、日志等敏感信息）
+output/
+# Outlook令牌原始文件
+outlook/
+outlook*.txt
+# 临时文件
+tmp.*
+# CSV数据文件（可能含敏感账号信息）
+*.csv
+# Kilo配置目录
+.kilo/
+
+# 允许保留的特定txt文件
+!TUTORIAL.txt
+
+# ===== 参考文档（仅本地） =====
+reference/
+
+# ===== 文档目录 =====
+# docs/整体不推送，仅explain/为公开文档允许推送
+docs/*
+!docs/explain/
+!docs/explain/**
+
+# ===== Python遗留 =====
+# 已迁移至Java，Python源码归档在archive/python/（已被archive/规则覆盖）
+# 以下为Python缓存文件忽略，防止残留文件误提交
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+requirements.txt
+
+# ===== IDE配置 =====
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===== 操作系统生成文件 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Docker遗留 =====
+# 已弃用容器化方案，保留忽略规则
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# ===== Java编译输出 =====
+# PC版直接运行源码，不提交.class文件
+pc/out/
+
+# ===== 归档与备份 =====
+# 本地归档文件（含历史版本、恢复产物）
+archive/
+bak/
+RECOVERY.md
+
+# ===== Android构建缓存 =====
+# 自动生成，非源码
+android/.gradle/
+android/app/build/
+android/local.properties
+
+# ===== Trae IDE =====
+.trae/
+
+# ===== PC版临时文件 =====
+pc/tmp_*

@@ -1,0 +1,12 @@
+/* ===== 星空主题 (Starry Night) — 变量覆写已在variables.css ===== */
+/* 本文件仅保留无法通过CSS变量覆盖的特殊规则 */
+
+body.theme-starry .sidebar {
+    box-shadow: 2px 0 15px rgba(48, 43, 99, 0.3);
+}
+body.theme-starry .sidebar-menu ul li a:hover {
+    background: rgba(123, 104, 238, 0.15);
+}
+body.theme-starry .loading-overlay {
+    background: rgba(15, 12, 41, 0.8);
+}
