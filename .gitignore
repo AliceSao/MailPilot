@@ -57,7 +57,9 @@ pc/out/
 
 # ===== 归档与备份 =====
 # 本地归档文件（含历史版本、恢复产物）
-archive/
+archive/*
+!archive/legacy-python/
+!archive/legacy-python/**
 bak/
 RECOVERY.md
 
